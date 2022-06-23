@@ -1,0 +1,11 @@
+[
+{
+  "modid": "dveins",
+  "name": "Drilling Veins",
+  "description": "This mod is for accuiring resources.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "authorList": ["igentuman"],
+  "logoFile": "assets/dveins/textures/blocks/dveins.png"
+}
+]

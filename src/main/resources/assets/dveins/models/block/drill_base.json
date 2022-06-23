@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"3": "dveins:blocks/bellows_bag"
+	},
+	"elements": [
+		{
+			"from": [2, 2, 2],
+			"to": [14, 14, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 2]},
+			"faces": {
+				"east": {"uv": [0, 0, 6, 6], "rotation": 180, "texture": "#3"},
+				"south": {"uv": [6, 0, 12, 6], "texture": "#3"},
+				"west": {"uv": [0, 0, 6, 6], "texture": "#3"},
+				"up": {"uv": [0, 0, 6, 6], "rotation": 90, "texture": "#3"},
+				"down": {"uv": [0, 0, 6, 6], "rotation": 270, "texture": "#3"}
+			}
+		}
+	]
+}

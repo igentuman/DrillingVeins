@@ -1,2 +1,13 @@
-tile.drill.name=Drill
+tile.drill_base.name=Drill
+tile.electric_motor.name=Electric Motor
+tile.drill_iron_head.name=Drill Iron Head
+tile.drill_diamond_head.name=Drill Diamond Head
+tile.coal_ore.name=Hardened Coal Ore
+tile.iron_ore.name=Hardened Iron Ore
+tile.gold_ore.name=Hardened Gold Ore
+tile.copper_ore.name=Hardened Copper Ore
+tile.tin_ore.name=Hardened Tin Ore
+tile.lead_ore.name=Hardened Lead Ore
+tile.redstone_ore.name=Hardened Redstone Ore
 container.drill=Drill
+container.electric_motor=Electric Motor

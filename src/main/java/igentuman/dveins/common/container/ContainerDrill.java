@@ -1,7 +1,7 @@
 package igentuman.dveins.common.container;
 
 import igentuman.dveins.DVeins;
-import igentuman.dveins.common.tile.TileDrill;
+import igentuman.dveins.common.tile.TileDrillBase;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.PacketUpdateItemStack;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +22,7 @@ import java.util.List;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 public class ContainerDrill extends Container implements PacketUpdateItemStack.IUpdateNonSlotItemStack {
-    private final TileDrill forgehammer;
+    private final TileDrillBase drill;
     public static final int FORGEHAMMER_SIZE = 9;
 
     public int progress;
@@ -32,9 +32,9 @@ public class ContainerDrill extends Container implements PacketUpdateItemStack.I
     public List<Slot> craftingSlots = new ArrayList<>();
     public List<Slot> playerSlots = new ArrayList<>();
 
-    public ContainerDrill(IInventory playerInventory, TileDrill forgehammer) {
-        this.forgehammer = forgehammer;
-        this.result = forgehammer.getResult();
+    public ContainerDrill(IInventory playerInventory, TileDrillBase drill) {
+        this.drill = drill;
+        this.result = drill.getResult();
 
         addMachineSlots();
         addPlayerSlots(playerInventory);
@@ -43,16 +43,16 @@ public class ContainerDrill extends Container implements PacketUpdateItemStack.I
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendWindowProperty(this, 0, forgehammer.getAdjustedProgress());
-        listener.sendWindowProperty(this, 1, forgehammer.requiredProgress);
-        sendResultStack(listener, forgehammer.getResult());
+        listener.sendWindowProperty(this, 0, drill.getAdjustedProgress());
+        listener.sendWindowProperty(this, 1, drill.requiredProgress);
+        sendResultStack(listener, drill.getResult());
     }
 
     public void sendResultStack(IContainerListener listener, ItemStack stack) {
         if(!(listener instanceof EntityPlayerMP)) return;
 
         ModPacketHandler.instance.sendTo(
-                new PacketUpdateItemStack(this, 0, forgehammer.getResult()),
+                new PacketUpdateItemStack(this, 0, drill.getResult()),
                 (EntityPlayerMP) listener
         );
     }
@@ -60,25 +60,25 @@ public class ContainerDrill extends Container implements PacketUpdateItemStack.I
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        boolean stackChanged = !ItemStack.areItemStackTagsEqual(this.result, this.forgehammer.getResult());
+        boolean stackChanged = !ItemStack.areItemStackTagsEqual(this.result, this.drill.getResult());
 
         for (IContainerListener listener : listeners) {
             if (stackChanged) {
-                sendResultStack(listener, forgehammer.getResult());
+                sendResultStack(listener, drill.getResult());
             }
 
-            if (this.progress != forgehammer.getAdjustedProgress()) {
-                listener.sendWindowProperty(this, 0, forgehammer.getAdjustedProgress());
+            if (this.progress != drill.getAdjustedProgress()) {
+                listener.sendWindowProperty(this, 0, drill.getAdjustedProgress());
             }
 
-            if (this.requiredProgress != forgehammer.requiredProgress) {
-                listener.sendWindowProperty(this, 1, forgehammer.requiredProgress);
+            if (this.requiredProgress != drill.requiredProgress) {
+                listener.sendWindowProperty(this, 1, drill.requiredProgress);
             }
         }
 
-        this.progress = forgehammer.getAdjustedProgress();
-        this.requiredProgress = forgehammer.requiredProgress;
-        this.result = forgehammer.getResult();
+        this.progress = drill.getAdjustedProgress();
+        this.requiredProgress = drill.requiredProgress;
+        this.result = drill.getResult();
     }
 
 
@@ -116,7 +116,7 @@ public class ContainerDrill extends Container implements PacketUpdateItemStack.I
     }
 
     private void addMachineSlots() {
-        IItemHandler itemHandler = this.forgehammer.getCapability(ITEM_HANDLER_CAPABILITY, null);
+        IItemHandler itemHandler = this.drill.getCapability(ITEM_HANDLER_CAPABILITY, null);
         Slot s = this.addSlotToContainer(new SlotItemHandler(
                 itemHandler,
                 0,

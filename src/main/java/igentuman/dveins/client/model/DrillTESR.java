@@ -1,20 +1,20 @@
 package igentuman.dveins.client.model;
 
 import igentuman.dveins.DVeins;
-import igentuman.dveins.common.tile.TileDrill;
+import igentuman.dveins.common.tile.TileDrillBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class DrillTESR extends TileEntitySpecialRenderer<TileDrill> {
-    private static final ResourceLocation BELLOWS_BAG_TEXTURE = new ResourceLocation(
+public class DrillTESR extends TileEntitySpecialRenderer<TileDrillBase> {
+    private static final ResourceLocation DRILL_HEAD_TEXTURE = new ResourceLocation(
             DVeins.MODID,
-            "textures/blocks/bellows_bag2.png"
+            "textures/blocks/drill_head.png"
     );
-    private final ModelDrill modelBag = new ModelDrill();
+    private final ModelDrillHead modelDrillHead = new ModelDrillHead();
 
     @Override
-    public void render(TileDrill te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    public void render(TileDrillBase te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         GlStateManager.pushAttrib();
         GlStateManager.pushMatrix();
 
@@ -41,15 +41,15 @@ public class DrillTESR extends TileEntitySpecialRenderer<TileDrill> {
        // GlStateManager.scale(1, 1, pistonScale);
         GlStateManager.translate(0, 0, -1);
 
-        renderBag();
+        renderDrillHead();
 
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
         GlStateManager.popAttrib();
     }
 
-    private void renderBag() {
-        this.bindTexture(BELLOWS_BAG_TEXTURE);
-        modelBag.render();
+    private void renderDrillHead() {
+        this.bindTexture(DRILL_HEAD_TEXTURE);
+        modelDrillHead.render();
     }
 }

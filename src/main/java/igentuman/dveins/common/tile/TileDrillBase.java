@@ -2,7 +2,7 @@ package igentuman.dveins.common.tile;
 
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
-import igentuman.dveins.common.block.BlockDrill;
+import igentuman.dveins.common.block.BlockDrillBase;
 import igentuman.dveins.common.capability.InputMechCapability;
 import igentuman.dveins.common.inventory.ExistingOnlyItemHandlerWrapper;
 import igentuman.dveins.common.inventory.InventoryCraftingWrapper;
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
-public class TileDrill extends TileEntity implements ITickable {
+public class TileDrillBase extends TileEntity implements ITickable {
     public InventoryCraftingWrapper inventory;
     public InputMechCapability mechCapability;
     ItemStack result;
@@ -38,9 +38,9 @@ public class TileDrill extends TileEntity implements ITickable {
     public int outputCooldown;
     public QueueItemHandler outputQueue;
 
-    public TileDrill() {
+    public TileDrillBase() {
         super();
-        inventory = new MechanicalForgeHammerItemCapabillity();
+        inventory = new DrillItemCapabillity();
         mechCapability = new InputMechCapability();
         result = ItemStack.EMPTY;
         progress = 0;
@@ -155,8 +155,8 @@ public class TileDrill extends TileEntity implements ITickable {
 
     public EnumFacing findDirection() {
         IBlockState bs = world.getBlockState(pos);
-        return bs.getBlock() == RegistryHandler.DRILL ?
-                bs.getValue(BlockDrill.FACING) : EnumFacing.DOWN;
+        return bs.getBlock() == RegistryHandler.DRILL_BASE ?
+                bs.getValue(BlockDrillBase.FACING) : EnumFacing.DOWN;
     }
 
 
@@ -270,7 +270,7 @@ public class TileDrill extends TileEntity implements ITickable {
         world.spawnEntity(entity);
     }
 
-    private class MechanicalForgeHammerItemCapabillity extends InventoryCraftingWrapper {
+    private class DrillItemCapabillity extends InventoryCraftingWrapper {
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
@@ -287,7 +287,7 @@ public class TileDrill extends TileEntity implements ITickable {
                 requiredProgress = getProgressRequired();
             }
 
-            TileDrill.this.markDirty();
+            TileDrillBase.this.markDirty();
         }
     }
 

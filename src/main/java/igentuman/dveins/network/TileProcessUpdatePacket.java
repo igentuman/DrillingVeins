@@ -1,6 +1,6 @@
 package igentuman.dveins.network;
 
-import igentuman.evtweaks.EvTweaks;
+import igentuman.dveins.DVeins;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -54,7 +54,7 @@ public class TileProcessUpdatePacket implements IMessage {
         @Override
         public IMessage onMessage(TileProcessUpdatePacket message, MessageContext ctx) {
             FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
-                EvTweaks.proxy.handleProcessUpdatePacket(message, ctx);
+                DVeins.proxy.handleProcessUpdatePacket(message, ctx);
             });
             return null;
         }

@@ -2,7 +2,7 @@
 package igentuman.dveins.common.block;
 
 import igentuman.dveins.DVeins;
-import igentuman.dveins.common.tile.TileDrill;
+import igentuman.dveins.common.tile.TileDrillBase;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -24,14 +24,14 @@ import javax.annotation.Nullable;
 import static net.minecraft.inventory.InventoryHelper.spawnItemStack;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
-public class BlockDrill extends BlockHorizontal {
+public class BlockDrillBase extends BlockHorizontal {
 
-    public BlockDrill() {
+    public BlockDrillBase() {
         super(Material.IRON);
         this.setHardness(3.5f);
         this.setResistance(17.5f);
-        this.setTranslationKey("mechanical_forgehammer");
-        this.setRegistryName(DVeins.MODID, "mechanical_forgehammer");
+        this.setTranslationKey("drill_base");
+        this.setRegistryName(DVeins.MODID, "drill_base");
         this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
@@ -56,6 +56,11 @@ public class BlockDrill extends BlockHorizontal {
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
+
     @Override
     public boolean hasTileEntity(IBlockState state) {
         return true;
@@ -64,7 +69,7 @@ public class BlockDrill extends BlockHorizontal {
     @Nullable
     @Override
     public TileEntity createTileEntity(@NotNull World world, @NotNull IBlockState state) {
-        return new TileDrill();
+        return new TileDrillBase();
     }
 
     @Override
@@ -74,7 +79,7 @@ public class BlockDrill extends BlockHorizontal {
             rotateBlock(worldIn,pos,facing.getOpposite());
             return false;
         }
-        if(!(te instanceof TileDrill)) {
+        if(!(te instanceof TileDrillBase)) {
             return true;
         }
 
@@ -90,8 +95,8 @@ public class BlockDrill extends BlockHorizontal {
     {
         TileEntity te = worldIn.getTileEntity(pos);
 
-        if(te instanceof TileDrill) {
-            TileDrill temw = (TileDrill) te;
+        if(te instanceof TileDrillBase) {
+            TileDrillBase temw = (TileDrillBase) te;
             IItemHandler inventory = temw.getCapability(ITEM_HANDLER_CAPABILITY, null);
             assert inventory != null;
             dropInventoryItems(worldIn, pos.getX(), pos.getY(), pos.getZ(), inventory);

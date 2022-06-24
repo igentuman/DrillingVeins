@@ -76,8 +76,6 @@ public class GuiDrill extends BaseGui {
         this.fontRenderer.drawString(I18n.format("container.drill"), 28, 6, 4210752);
         this.fontRenderer.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 4210752);
 
-        if(!ModConfig.DEBUG) return;
-
         String progressString = String.format(
                 "Progress: %d/%d\nResult: %s\nResult empty: %s",
                 container.progress,

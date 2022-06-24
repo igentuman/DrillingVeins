@@ -2,6 +2,7 @@ package igentuman.dveins;
 
 import igentuman.dveins.network.GuiProxy;
 import igentuman.dveins.network.ModPacketHandler;
+import igentuman.dveins.ore.OreGen;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.Logger;
 
 @Mod(
@@ -42,6 +44,7 @@ public class DVeins
         MinecraftForge.EVENT_BUS.register(new RegistryHandler());
         MinecraftForge.EVENT_BUS.register(this);
         ModPacketHandler.registerMessages(MODID);
+        GameRegistry.registerWorldGenerator(new OreGen(), 0);
     }
 
     @EventHandler

@@ -70,9 +70,6 @@ public class TileElectricMotor extends TileEntity implements ITickable {
 
 
 
-    public int getProgressRequired() {
-        return ModConfig.mechanicalCrafter.basePowerCost + ModConfig.mechanicalCrafter.ingredientPowerCost;
-    }
 
     public double getScaledProgress() {
         return progress / (double) requiredProgress;
@@ -108,16 +105,6 @@ public class TileElectricMotor extends TileEntity implements ITickable {
     public void update() {
 
 
-        if(outputCooldown > 0 && !world.isRemote) {
-            outputCooldown--;
-        }
-
-        if(!outputQueue.isEmpty() && !world.isRemote) {
-            if(outputCooldown <= 0) {
-                outputCooldown = ModConfig.mechanicalCrafter.outputCooldown;
-            }
-            return;
-        }
 
 
     }

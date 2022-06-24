@@ -4,82 +4,103 @@ import net.minecraftforge.common.config.Config;
 
 @Config(modid = DVeins.MODID)
 public class ModConfig {
-    public static MechanicalCrafter mechanicalCrafter = new MechanicalCrafter();
-    public static SturdyGearbox sturdyGearbox = new SturdyGearbox();
-    public static MechanicalBellows mechanicalBellows = new MechanicalBellows();
+    public static OreGeneration oreGeneration = new OreGeneration();
+    public static Drilling drilling = new Drilling();
 
-    @Config.Name("debug info")
-    @Config.Comment({
-            "Show debug info, for development purposes only."
-    })
-    public static boolean DEBUG = false;
+    public static class OreGeneration {
 
-    public static class MechanicalCrafter {
-        @Config.Name("base power cost")
+        @Config.Name("enable_ore_generation")
         @Config.Comment({
-                "The base amount of power required to perform one crafting operation.",
-                "Basically the rotational speed of the connected gearbox multiplied by the amount of time it takes to craft in ticks."
+                "The base amount of power required to perform one crafting operation."
         })
-        public int basePowerCost = 1000;
+        public boolean enable_ore_generation = true;
 
-        @Config.Name("per ingredient power cost")
+        @Config.Name("dimensions")
         @Config.Comment({
-                "The amount of additional rotation required per ingredient. Can be set to 0."
+                "List of dimensions where ores can appear"
         })
-        public int ingredientPowerCost = 200;
 
-        @Config.Name("ejection velocity")
-        @Config.Comment({
-                "How quickly items move when ejected into the world. It's recommended to not set this higher than 1.0"
-        })
-        @Config.RangeDouble(min = 0.0)
-        public double ejectionVelocity = 0.1;
+        public String[] dimensions = new String[]{
+                "0"
+        };
 
-        @Config.Name("output cooldown time")
+        @Config.Name("vein_chance")
         @Config.Comment({
-                "Cooldown time between item outputs in ticks.",
-                "Only relevant when there are a ton of container items or when crafting at a very high speed."
+                "How often veins will appear in world",
+                "Bigger values means more rare veins (= 1/vein_channce)"
         })
-        @Config.RangeInt(min=0)
-        public int outputCooldown = 20;
+        public int vein_chance = 2000;
+
+        @Config.Name("same_vein_min_distance")
+        @Config.Comment({
+                "How far in blocks veins of same ores should be from each other at minimal"
+        })
+        public int same_vein_min_distance = 1000;
+
+        @Config.Name("max_vein_size")
+        @Config.Comment({
+                "Maximum ore blocks per vein"
+        })
+        public int max_vein_size = 8000;
+
+        @Config.Name("min_vein_size")
+        @Config.Comment({
+                "Minimum ore blocks per vein"
+        })
+        public int min_vein_size = 6000;
+
+        @Config.Name("small_piles_per_block")
+        @Config.Comment({
+                "How many pliles should drop from ore block",
+                "One pile equals one nugget"
+        })
+
+        public int small_piles_per_block = 3;
     }
 
-    public static class SturdyGearbox {
-        @Config.Name("conversion rate")
-        @Config.Comment({
-                "The conversion rate from Immersive Engineering rotation to mechanical power."
-        })
-        public double conversionRate = 4.0;
+    public static class Drilling {
 
-        @Config.Name("output cap")
+        @Config.Name("energy_for_one_block")
         @Config.Comment({
-                "The maximum amount of power the sturdy gearbox is allowed to output. Can be used for balance reasons."
+                "How much kinetic (rotation) energy you need to harvest one block"
         })
-        public double outputCap = Double.POSITIVE_INFINITY;
+        public int energy_for_one_block = 1000;
 
+        @Config.Name("diamond_drill_head_multiplier")
+        @Config.Comment({
+                "Speed multiplier to harvest block with diamond head"
+        })
+        public double diamond_drill_head_multiplier = 1.5D;
+
+        @Config.Name("ores_whitelist")
+        @Config.Comment({
+                "List of ores allowed to harvest"
+        })
+
+        public String[] ores_whitelist = new String[]{
+                "oreOreHardenedCoal",
+                "oreOreHardenedIron",
+                "oreOreHardenedCopper",
+                "oreOreHardenedTin",
+                "oreOreHardenedLead",
+                "oreOreHardenedGold",
+                "oreOreHardenedRedstone"
+        };
     }
 
-    public static class MechanicalBellows {
-        @Config.Name("power factor")
-        @Config.Comment({
-                "A factor to multiply the mechanical bellows' rotation by.",
-                "Can be used to make the bellows look lss ridiculous."
-        })
-        public double powerFactor = 0.5;
+    public static class ElectricMotor {
 
-        @Config.Name("rotation cap")
+        @Config.Name("rf_per_tick")
         @Config.Comment({
-                "The maximum amount of rotation per tick the bellows can turn.",
-                "Can be used to cap the speed at which the bellows speed up furnaces."
+                "RF energy consumption"
         })
-        public double rotationCap = 80.0;
+        public int rf_per_tick = 1000;
 
-        @Config.Name("rotation per burntick")
+        @Config.Name("kinetic_energy_per_tick")
         @Config.Comment({
-                "How much the bellows have to turn to add one burn tick.",
-                "Setting it to 40 will mean that running the bellows at a speed of 40 will double the furnace speed.",
-                "Running it at a speed of 80 will triple it."
+                "Kinetic (rotation) energy per tick"
         })
-        public double rotationPerBurnTick = 40.0;
+        public int kinetic_energy_per_tick = 50;
     }
+
 }

@@ -83,7 +83,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
     }
 
     public int getProgressRequired() {
-        return ModConfig.mechanicalCrafter.basePowerCost + ModConfig.mechanicalCrafter.ingredientPowerCost * getNumberOfIngredients();
+        return ModConfig.drilling.energy_for_one_block;
     }
 
     public double getScaledProgress() {
@@ -127,7 +127,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
         if(!outputQueue.isEmpty() && !world.isRemote) {
             if(outputCooldown <= 0) {
                 outputItemFromQueue();
-                outputCooldown = ModConfig.mechanicalCrafter.outputCooldown;
+                outputCooldown = 10;
             }
             return;
         }
@@ -258,7 +258,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
         double y = pos.getY() + ((direction.getAxis() == EnumFacing.Axis.Y) ? 0.5 : 0.125)
                 + direction.getYOffset() * 0.625;
         double z = pos.getZ() + 0.5 + direction.getZOffset() * 0.625;
-        double speed = ModConfig.mechanicalCrafter.ejectionVelocity;
+        double speed = 1D;
         double sx = direction.getXOffset() * speed;
         double sy = direction.getYOffset() * speed;
         double sz = direction.getZOffset() * speed;

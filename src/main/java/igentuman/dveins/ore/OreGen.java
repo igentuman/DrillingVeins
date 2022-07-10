@@ -105,9 +105,9 @@ public class OreGen implements IWorldGenerator {
         if (minHeight < 0 || maxHeight > 256 || minHeight > maxHeight)
             throw new IllegalArgumentException("Illegal Height Arguments for WorldGenerator");
         for (int i=0; i<chancesToSpawn; i++){
-            int x = chunk_X * 16 + 1;
+            int x = chunk_X * 16;
             int y = maxHeight;
-            int z = chunk_Z * 16 + 1;
+            int z = chunk_Z * 16;
             generateVein(world, rand, blockAmount, x, y ,z , blockToGen);
         }
     }

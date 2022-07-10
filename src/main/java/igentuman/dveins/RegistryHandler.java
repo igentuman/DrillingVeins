@@ -20,6 +20,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static igentuman.dveins.DVeins.MODID;
 
 @Mod.EventBusSubscriber
@@ -58,6 +61,8 @@ public class RegistryHandler {
     @ObjectHolder("dveins:drill_diamond_head")
     public static Block DRILL_DIAMOND_HEAD = new BlockDrillHeadDiamond();
 
+    public static List<Block> oreBlocks = new ArrayList<>();
+
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().register(COAL_ORE);
@@ -67,6 +72,14 @@ public class RegistryHandler {
         event.getRegistry().register(TIN_ORE);
         event.getRegistry().register(LEAD_ORE);
         event.getRegistry().register(REDSTONE_ORE);
+
+        oreBlocks.add(COAL_ORE);
+        oreBlocks.add(IRON_ORE);
+        oreBlocks.add(COPPER_ORE);
+        oreBlocks.add(GOLD_ORE);
+        oreBlocks.add(TIN_ORE);
+        oreBlocks.add(LEAD_ORE);
+        oreBlocks.add(REDSTONE_ORE);
 
         event.getRegistry().register(DRILL_BASE);
         event.getRegistry().register(DRILL_IRON_HEAD);

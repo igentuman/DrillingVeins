@@ -76,6 +76,7 @@ dependencies {
     deobfCompile "curse.maven:immersive-engineering-231951:2974106"
     deobfProvided "mezz.jei:jei_1.12.2:${jei_version}:api"
     implementation "mezz.jei:jei_1.12.2:${jei_version}"
+    deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
     runtime "mezz.jei:jei_1.12.2:${jei_version}"
 }
 

@@ -15,6 +15,12 @@ public class ModConfig {
         })
         public boolean enable_ore_generation = true;
 
+        @Config.Name("visible_on_surface")
+        @Config.Comment({
+                "If disabled, veins will be hidden underground (canSeeSky checks)."
+        })
+        public boolean visible_on_surface = true;
+
         @Config.Name("dimensions")
         @Config.Comment({
                 "List of dimensions where ores can appear"
@@ -30,12 +36,6 @@ public class ModConfig {
                 "Bigger values means more rare veins (= 1/vein_channce)"
         })
         public int vein_chance = 2000;
-
-        @Config.Name("same_vein_min_distance")
-        @Config.Comment({
-                "How far in blocks veins of same ores should be from each other at minimal"
-        })
-        public int same_vein_min_distance = 1000;
 
         @Config.Name("max_vein_size")
         @Config.Comment({

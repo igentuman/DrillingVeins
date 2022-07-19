@@ -3,6 +3,7 @@ package igentuman.dveins.common.block;
 
 import igentuman.dveins.DVeins;
 import igentuman.dveins.common.tile.TileDrillBase;
+import igentuman.dveins.common.tile.TileElectricMotor;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -75,10 +76,7 @@ public class BlockDrillBase extends BlockHorizontal {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         TileEntity te = worldIn.getTileEntity(pos);
-       /* if(playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals("immersiveengineering:tool")) {
-            rotateBlock(worldIn,pos,facing.getOpposite());
-            return false;
-        }*/
+
         if(!(te instanceof TileDrillBase)) {
             return true;
         }

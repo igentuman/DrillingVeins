@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
 
 public class GuiDrill extends GuiContainer {
     private static final ResourceLocation background = new ResourceLocation(
@@ -28,7 +27,6 @@ public class GuiDrill extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         mc.getTextureManager().bindTexture(background);
-
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
@@ -60,26 +58,15 @@ public class GuiDrill extends GuiContainer {
         GlStateManager.translate((float)this.guiLeft, (float)this.guiTop, 0.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableRescaleNormal();
-
+        drawItem(container.ore, 147, 11);
         GlStateManager.popMatrix();
-        /*
-        this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
-
-        RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.pushMatrix();
-        GlStateManager.translate((float)this.guiLeft, (float)this.guiTop, 0.0F);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.enableRescaleNormal();
-        // drawItem(container.ore, 124, 35);
-        GlStateManager.popMatrix();
-        //this.renderHoveredToolTip(mouseX, mouseY);*/
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
     @Override
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
         if(!container.ore.isEmpty()
-                && isPointInRegion(124, 35, 16, 16, mouseX, mouseY)) {
+                && isPointInRegion(147, 11, 16, 16, mouseX, mouseY)) {
             this.renderToolTip(container.ore, mouseX, mouseY);
         }
     }
@@ -87,6 +74,10 @@ public class GuiDrill extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         this.fontRenderer.drawString(I18n.format("container.drill"), 28, 6, 4210752);
-
+        if(container.ore != ItemStack.EMPTY) {
+            this.fontRenderer.drawString(I18n.format("container.drill.ore", container.ore.getDisplayName()), 6, 16, 4210752);
+            this.fontRenderer.drawString(I18n.format("container.drill.ore_left", container.getBlocksLeft()), 6, 26, 4210752);
+            this.fontRenderer.drawString(I18n.format("container.drill.current_y", container.getCurrentY()), 6, 36, 4210752);
+        }
     }
 }

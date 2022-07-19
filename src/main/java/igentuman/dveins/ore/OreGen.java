@@ -84,7 +84,7 @@ public class OreGen implements IWorldGenerator {
         } catch (IllegalArgumentException ignored) {
 
         }
-        return horizontal < 1 && vertical < 15;
+        return horizontal < 2 && vertical < 25;
     }
 
     @Override

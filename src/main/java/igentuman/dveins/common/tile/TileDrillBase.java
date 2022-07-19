@@ -7,6 +7,7 @@ import igentuman.dveins.common.capability.InputMechCapability;
 import igentuman.dveins.common.inventory.QueueItemHandler;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -35,7 +36,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
     public final int requiredKineticEnergy = ModConfig.drilling.energy_for_one_block;
     public int outputCooldown;
     public QueueItemHandler outputQueue;
-    private int currentY;
+    private int currentY = -1;
     private boolean chunkEmptyFlag = false;
     private Chunk chunk;
 
@@ -46,7 +47,11 @@ public class TileDrillBase extends TileEntity implements ITickable {
         kineticEnergy = 0;
         outputCooldown = 0;
         outputQueue = new QueueItemHandler();
-        currentY = 1;
+    }
+
+    public int getCurrentY()
+    {
+        return currentY;
     }
 
     @Override
@@ -70,11 +75,6 @@ public class TileDrillBase extends TileEntity implements ITickable {
         return super.getCapability(capability, facing);
     }
 
-
-    public int getProgressRequired() {
-        return ModConfig.drilling.energy_for_one_block;
-    }
-
     public double getScaledProgress() {
         return kineticEnergy / (double) requiredKineticEnergy;
     }
@@ -86,10 +86,6 @@ public class TileDrillBase extends TileEntity implements ITickable {
         else {
             return requiredKineticEnergy;
         }
-    }
-
-    public ItemStack getResult() {
-        return result;
     }
 
     public TileProcessUpdatePacket getTileUpdatePacket() {
@@ -108,8 +104,10 @@ public class TileDrillBase extends TileEntity implements ITickable {
 
     @Override
     public void update() {
-
-       /* if(outputCooldown > 0 && !world.isRemote) {
+        if(!world.isRemote && currentY == -1) {
+            currentY = getPos().getY();
+        }
+        if(outputCooldown > 0 && !world.isRemote) {
             outputCooldown--;
         }
 
@@ -134,7 +132,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
         } else {
             if( !world.isRemote)
                 kineticEnergy = 0;
-        }*/
+        }
     }
 
     public ItemStack getOre()
@@ -151,7 +149,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
     public int blocksInVein()
     {
         int counter = 0;
-        for(int y = currentY; y < pos.getY(); y ++) {
+        for(int y = currentY; y > 1; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     IBlockState st = world.getBlockState(new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z)));
@@ -164,19 +162,23 @@ public class TileDrillBase extends TileEntity implements ITickable {
         return counter;
     }
 
+    public BlockPos firstOreBlockPos = null;
+
     public IBlockState getFirstOreBlockInChunk()
     {
-        for(int y = currentY; y < pos.getY(); y ++) {
+        for(int y = currentY; y > 1; y--) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     IBlockState st = world.getBlockState(new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z)));
                     if(RegistryHandler.oreBlocks.contains(st.getBlock())) {
+                        firstOreBlockPos = new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z));
                         return st;
                     }
                 }
             }
-            currentY++;
+            currentY--;
         }
+        firstOreBlockPos = null;
         return null;
     }
 
@@ -205,7 +207,11 @@ public class TileDrillBase extends TileEntity implements ITickable {
         ItemStack output = getOre();
         if(output == null || output.equals(ItemStack.EMPTY)) return;
         if( !world.isRemote) {
-            outputQueue.push(output);
+            if(firstOreBlockPos != null) {
+                outputQueue.push(output);
+                world.setBlockToAir(firstOreBlockPos);
+                firstOreBlockPos = null;
+            }
         }
         /*if(kineticEnergy >= requiredKineticEnergy && kineticEnergy > 0) {
             playForgeSound();

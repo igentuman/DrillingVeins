@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.Config;
 public class ModConfig {
     public static OreGeneration oreGeneration = new OreGeneration();
     public static Drilling drilling = new Drilling();
+    public static ElectricMotor electricMotor = new ElectricMotor();
 
     public static class OreGeneration {
 
@@ -35,7 +36,7 @@ public class ModConfig {
                 "How often veins will appear in world",
                 "Bigger values means more rare veins (= 1/vein_channce)"
         })
-        public int vein_chance = 2000;
+        public int vein_chance = 750;
 
         @Config.Name("max_vein_size")
         @Config.Comment({

@@ -11,3 +11,6 @@ tile.lead_ore.name=Hardened Lead Ore
 tile.redstone_ore.name=Hardened Redstone Ore
 container.drill=Drill
 container.electric_motor=Electric Motor
+container.drill.ore=Ore in vein: %s
+container.drill.ore_left=Blocks left: %s
+container.drill.current_y=Current Y: %s

@@ -1,17 +1,10 @@
 package igentuman.dveins.common.tile;
 
-import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
 import igentuman.dveins.common.block.BlockDrillBase;
 import igentuman.dveins.common.capability.InputMechCapability;
-import igentuman.dveins.common.inventory.ExistingOnlyItemHandlerWrapper;
-import igentuman.dveins.common.inventory.InventoryCraftingWrapper;
-import igentuman.dveins.common.inventory.QueueItemHandler;
-import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
-import igentuman.dveins.util.ItemHelper;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -19,8 +12,6 @@ import net.minecraft.util.*;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -32,19 +23,15 @@ import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABI
 public class TileElectricMotor extends TileEntity implements ITickable {
     public InputMechCapability mechCapability;
     ItemStack result;
-    public int progress;
-    public int requiredProgress;
-    public int outputCooldown;
-    public QueueItemHandler outputQueue;
-
+    public int kineticEnergy;
+    public int energyStored;
+    public int maxEnergy = 100000;
     public TileElectricMotor() {
         super();
         mechCapability = new InputMechCapability();
         result = ItemStack.EMPTY;
-        progress = 0;
-        requiredProgress = 0;
-        outputCooldown = 0;
-        outputQueue = new QueueItemHandler();
+        kineticEnergy = 0;
+        energyStored = 0;
     }
 
     @Override
@@ -72,16 +59,11 @@ public class TileElectricMotor extends TileEntity implements ITickable {
 
 
     public double getScaledProgress() {
-        return progress / (double) requiredProgress;
+        return energyStored / (double) maxEnergy;
     }
 
     public int getAdjustedProgress() {
-        if(outputQueue.isEmpty()) {
-            return progress;
-        }
-        else {
-            return requiredProgress;
-        }
+        return energyStored;
     }
 
     public ItemStack getResult() {
@@ -91,14 +73,16 @@ public class TileElectricMotor extends TileEntity implements ITickable {
     public TileProcessUpdatePacket getTileUpdatePacket() {
         return new TileProcessUpdatePacket(
                 this.pos,
-                this.requiredProgress,
-                this.progress
+                this.kineticEnergy,
+                0,
+                energyStored
+
         );
     }
 
     public void onTileUpdatePacket(TileProcessUpdatePacket message) {
-        this.progress = (int)message.progress;
-        this.requiredProgress = (int)message.requiredProgress;
+        this.kineticEnergy = (int)message.kineticEnergy;
+        this.energyStored = (int)message.energyStored;
     }
 
     @Override
@@ -121,10 +105,6 @@ public class TileElectricMotor extends TileEntity implements ITickable {
     public void process() {
 
 
-        if(progress >= requiredProgress && progress > 0) {
-            playForgeSound();
-        }
-        progress = 0;
     }
 
     @SideOnly(Side.CLIENT)

@@ -73,11 +73,11 @@ dependencies {
     shade "com.github.MJaroslav.Reflectors:library:v4"
     compileOnly "org.jetbrains:annotations:17.0.0"
     deobfCompile "curse.maven:mysticalmechanics-300742:3006392"
-    deobfCompile "curse.maven:immersive-engineering-231951:2974106"
+    //deobfCompile "curse.maven:immersive-engineering-231951:2974106"
     deobfProvided "mezz.jei:jei_1.12.2:${jei_version}:api"
     implementation "mezz.jei:jei_1.12.2:${jei_version}"
-    deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
     runtime "mezz.jei:jei_1.12.2:${jei_version}"
+    //deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
 }
 
 processResources {

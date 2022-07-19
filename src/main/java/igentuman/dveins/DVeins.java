@@ -33,7 +33,7 @@ public class DVeins
     public static final String VERSION = "1.0.0";
 
     @Mod.Instance("dveins")
-    public static igentuman.dveins.DVeins instance;
+    public static DVeins instance;
         
     @SidedProxy(serverSide="igentuman.dveins.common.ServerProxy", clientSide="igentuman.dveins.client.ClientProxy")
     public static ISidedProxy proxy;
@@ -52,9 +52,10 @@ public class DVeins
 
     @EventHandler
     public void init(FMLInitializationEvent event)  {
+        logger.info("Starting Initialization.");
+        proxy.init(event);
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiProxy());
-        DVeinsOreDictionary.register();
     }
 
     @SubscribeEvent

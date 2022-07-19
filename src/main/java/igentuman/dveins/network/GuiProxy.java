@@ -16,7 +16,7 @@ public class GuiProxy implements IGuiHandler {
         BlockPos pos = new BlockPos(x, y, z);
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileDrillBase) {
-            return new ContainerDrill(player.inventory, (TileDrillBase) te);
+            return new ContainerDrill((TileDrillBase) te);
         }
         return null;
     }
@@ -26,8 +26,7 @@ public class GuiProxy implements IGuiHandler {
         BlockPos pos = new BlockPos(x, y, z);
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileDrillBase) {
-            TileDrillBase containerTileEntity = (TileDrillBase) te;
-            return new GuiDrill(new ContainerDrill(player.inventory, containerTileEntity));
+            return new GuiDrill(new ContainerDrill((TileDrillBase) te));
         }
         return null;
     }

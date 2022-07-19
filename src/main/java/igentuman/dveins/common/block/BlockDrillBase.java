@@ -75,10 +75,10 @@ public class BlockDrillBase extends BlockHorizontal {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         TileEntity te = worldIn.getTileEntity(pos);
-        if(playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals("immersiveengineering:tool")) {
+       /* if(playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals("immersiveengineering:tool")) {
             rotateBlock(worldIn,pos,facing.getOpposite());
             return false;
-        }
+        }*/
         if(!(te instanceof TileDrillBase)) {
             return true;
         }
@@ -89,30 +89,5 @@ public class BlockDrillBase extends BlockHorizontal {
 
         playerIn.openGui(DVeins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return true;
-    }
-
-    public void breakBlock(World worldIn, @NotNull BlockPos pos, @NotNull IBlockState state)
-    {
-        TileEntity te = worldIn.getTileEntity(pos);
-
-        if(te instanceof TileDrillBase) {
-            TileDrillBase temw = (TileDrillBase) te;
-            IItemHandler inventory = temw.getCapability(ITEM_HANDLER_CAPABILITY, null);
-            assert inventory != null;
-            dropInventoryItems(worldIn, pos.getX(), pos.getY(), pos.getZ(), inventory);
-            dropInventoryItems(worldIn, pos.getX(), pos.getY(), pos.getZ(), temw.outputQueue);
-        }
-
-        super.breakBlock(worldIn, pos, state);
-    }
-
-    private static void dropInventoryItems(World worldIn, double x, double y, double z, IItemHandler inventory) {
-        for (int i = 0; i < inventory.getSlots(); ++i) {
-            ItemStack itemstack = inventory.getStackInSlot(i);
-
-            if (!itemstack.isEmpty()) {
-                spawnItemStack(worldIn, x, y, z, itemstack);
-            }
-        }
     }
 }

@@ -10,12 +10,7 @@ public class ModPacketHandler {
 
     public static void registerMessages(String channelName) {
         instance = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
-        instance.registerMessage(
-                PacketUpdateItemStack.Handler.class,
-                PacketUpdateItemStack.class,
-                packetId++,
-                Side.CLIENT
-        );
+
         instance.registerMessage(
                 TileProcessUpdatePacket.Handler.class,
                 TileProcessUpdatePacket.class,

@@ -10,43 +10,36 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 
 public class TileProcessUpdatePacket implements IMessage {
-    public double progress;
-    public double requiredProgress;
+    public int kineticEnergy;
     public int energyStored;
-    public double baseProcessTime;
-    public double baseProcessPower;
     public BlockPos pos;
+    public int currentY;
+
 
     public TileProcessUpdatePacket() {
     }
 
-    public TileProcessUpdatePacket(BlockPos pos, double requiredProgress, double progress) {
+    public TileProcessUpdatePacket(BlockPos pos, int kineticEnergy, int currentY, int energyStored) {
         this.pos = pos;
-        this.requiredProgress = requiredProgress;
-        this.progress = progress;
+        this.kineticEnergy = kineticEnergy;
+        this.currentY = currentY;
+        this.energyStored = energyStored;
     }
 
     public void fromBytes(ByteBuf buf) {
         this.pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-        this.requiredProgress = buf.readDouble();
-        this.progress = buf.readDouble();
+        this.kineticEnergy = buf.readInt();
+        this.currentY = buf.readInt();
         this.energyStored = buf.readInt();
-        this.baseProcessTime = buf.readDouble();
-        this.baseProcessPower = buf.readDouble();
-
     }
 
     public void toBytes(ByteBuf buf) {
         buf.writeInt(this.pos.getX());
         buf.writeInt(this.pos.getY());
         buf.writeInt(this.pos.getZ());
-        buf.writeDouble(this.requiredProgress);
-        buf.writeDouble(this.progress);
-
+        buf.writeInt(this.kineticEnergy);
+        buf.writeInt(this.currentY);
         buf.writeInt(this.energyStored);
-        buf.writeDouble(this.baseProcessTime);
-        buf.writeDouble(this.baseProcessPower);
-
     }
 
     public static class Handler implements IMessageHandler<TileProcessUpdatePacket, IMessage> {

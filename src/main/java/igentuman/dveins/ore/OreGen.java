@@ -25,8 +25,8 @@ public class OreGen implements IWorldGenerator {
     public static final int maxBlocks = ModConfig.oreGeneration.max_vein_size;
     public static final int chances = ModConfig.oreGeneration.vein_chance;
     public static final List<String> dimensions = Arrays.asList(ModConfig.oreGeneration.dimensions);
-    private long xSeed = 6787867678L;
-    private long zSeed = 221233245549L;
+    public static long xSeed = 6787867678L;
+    public static long zSeed = 2212332449L;
     private int chunkID = 0;
     private int blocksCounter = 0;
 
@@ -55,7 +55,7 @@ public class OreGen implements IWorldGenerator {
         return ores[r.nextInt(ores.length)];
     }
 
-    private boolean chunkHasVein(int chunkX, int chunkZ, long worldSeed)
+    public static boolean chunkHasVein(int chunkX, int chunkZ, long worldSeed)
     {
         Random random = new Random(worldSeed + chunkX * xSeed + chunkZ * zSeed);
         if (random.nextInt(chances) == 0)

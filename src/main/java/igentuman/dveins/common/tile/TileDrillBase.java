@@ -4,18 +4,17 @@ import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
 import igentuman.dveins.common.block.BlockDrillBase;
 import igentuman.dveins.common.capability.InputMechCapability;
-import igentuman.dveins.common.inventory.ExistingOnlyItemHandlerWrapper;
-import igentuman.dveins.common.inventory.InventoryCraftingWrapper;
 import igentuman.dveins.common.inventory.QueueItemHandler;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
-import igentuman.dveins.util.ItemHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,23 +29,24 @@ import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 public class TileDrillBase extends TileEntity implements ITickable {
-    public InventoryCraftingWrapper inventory;
     public InputMechCapability mechCapability;
     ItemStack result;
-    public int progress;
-    public int requiredProgress;
+    public int kineticEnergy;
+    public final int requiredKineticEnergy = ModConfig.drilling.energy_for_one_block;
     public int outputCooldown;
     public QueueItemHandler outputQueue;
+    private int currentY;
+    private boolean chunkEmptyFlag = false;
+    private Chunk chunk;
 
     public TileDrillBase() {
         super();
-        inventory = new DrillItemCapabillity();
         mechCapability = new InputMechCapability();
         result = ItemStack.EMPTY;
-        progress = 0;
-        requiredProgress = 0;
+        kineticEnergy = 0;
         outputCooldown = 0;
         outputQueue = new QueueItemHandler();
+        currentY = 1;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
             return true;
         }
 
-        if (capability == MECH_CAPABILITY && facing != null && facing.getAxis() == findDirection().rotateY().getAxis()) {
+        if (capability == MECH_CAPABILITY && facing != null && facing == EnumFacing.UP) {
             return true;
         }
 
@@ -64,38 +64,27 @@ public class TileDrillBase extends TileEntity implements ITickable {
 
     @Override
     public <T> T getCapability(@NotNull Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == ITEM_HANDLER_CAPABILITY) {
-            return (T) (facing == null ? inventory : new ExistingOnlyItemHandlerWrapper(inventory));
-        }
-
-        if (capability == MECH_CAPABILITY && facing != null && facing.getAxis() == findDirection().rotateY().getAxis()) {
+        if (capability == MECH_CAPABILITY && facing != null && facing == EnumFacing.UP) {
             return (T) mechCapability;
         }
         return super.getCapability(capability, facing);
     }
 
-    public int getNumberOfIngredients() {
-        int count = 0;
-        if(!inventory.getStackInSlot(0).isEmpty()) {
-            count++;
-        }
-        return count;
-    }
 
     public int getProgressRequired() {
         return ModConfig.drilling.energy_for_one_block;
     }
 
     public double getScaledProgress() {
-        return progress / (double) requiredProgress;
+        return kineticEnergy / (double) requiredKineticEnergy;
     }
 
     public int getAdjustedProgress() {
         if(outputQueue.isEmpty()) {
-            return progress;
+            return kineticEnergy;
         }
         else {
-            return requiredProgress;
+            return requiredKineticEnergy;
         }
     }
 
@@ -106,21 +95,21 @@ public class TileDrillBase extends TileEntity implements ITickable {
     public TileProcessUpdatePacket getTileUpdatePacket() {
         return new TileProcessUpdatePacket(
                 this.pos,
-                this.requiredProgress,
-                this.progress
+                this.kineticEnergy,
+                this.currentY,
+                0
         );
     }
 
     public void onTileUpdatePacket(TileProcessUpdatePacket message) {
-        this.progress = (int)message.progress;
-        this.requiredProgress = (int)message.requiredProgress;
+        this.kineticEnergy = (int)message.kineticEnergy;
+        this.currentY = (int)message.currentY;
     }
 
     @Override
     public void update() {
 
-
-        if(outputCooldown > 0 && !world.isRemote) {
+       /* if(outputCooldown > 0 && !world.isRemote) {
             outputCooldown--;
         }
 
@@ -132,25 +121,76 @@ public class TileDrillBase extends TileEntity implements ITickable {
             return;
         }
 
-        if(canProgress()) {
-            progress += mechCapability.power;
+        if(chunkHasVein()) {
+            kineticEnergy += mechCapability.power;
             if( !world.isRemote) {
                 ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
             }
 
-            if(progress >= requiredProgress) {
+            if(kineticEnergy >= requiredKineticEnergy) {
                 process();
             }
 
         } else {
             if( !world.isRemote)
-            progress = 0;
-        }
+                kineticEnergy = 0;
+        }*/
     }
 
-    public boolean canProgress() {
-        ItemStack stack = ForgeringRecipeOutput(inventory.getCraftingGrid().getStackInSlot(0));
-        return !stack.isEmpty();
+    public ItemStack getOre()
+    {
+        if(chunkHasVein()) {
+
+            return new ItemStack(getFirstOreBlockInChunk().getBlock());
+        }
+        return ItemStack.EMPTY;
+    }
+
+
+
+    public int blocksInVein()
+    {
+        int counter = 0;
+        for(int y = currentY; y < pos.getY(); y ++) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    IBlockState st = world.getBlockState(new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z)));
+                    if(RegistryHandler.oreBlocks.contains(st.getBlock())) {
+                        counter++;
+                    }
+                }
+            }
+        }
+        return counter;
+    }
+
+    public IBlockState getFirstOreBlockInChunk()
+    {
+        for(int y = currentY; y < pos.getY(); y ++) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    IBlockState st = world.getBlockState(new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z)));
+                    if(RegistryHandler.oreBlocks.contains(st.getBlock())) {
+                        return st;
+                    }
+                }
+            }
+            currentY++;
+        }
+        return null;
+    }
+
+    public boolean chunkHasVein() {
+        if(chunk == null) {
+            chunk = world.getChunk(pos);
+        }
+        //do quit test first
+        if(!chunkEmptyFlag /*&& OreGen.chunkHasVein(chunk.x, chunk.z, world.getSeed())*/) {
+            //and then check chunk blocks actually
+            IBlockState st = getFirstOreBlockInChunk();
+            return st != null;
+        }
+        return false;
     }
 
     public EnumFacing findDirection() {
@@ -160,54 +200,17 @@ public class TileDrillBase extends TileEntity implements ITickable {
     }
 
 
-
-    public ItemStack ForgeringRecipeOutput(ItemStack input)
-    {
-        String itemName =  input.getItem().getRegistryName().toString();
-        itemName += input.getMetadata() != 0 ? ":"+input.getMetadata() : "";
-        switch (itemName) {
-            case "minecraft:iron_ingot":
-                return ItemHelper.getStackFromString("ic2:plate",3);
-            case "minecraft:iron_block":
-                return ItemHelper.getStackFromString("ic2:plate",12);
-            case "ic2:resource:6"://copper block
-                return ItemHelper.getStackFromString("ic2:plate",10);
-            case "ic2:ingot:2"://copper ingot
-                return ItemHelper.getStackFromString("ic2:plate",1);
-            case "ic2:ingot:6"://tin ingot
-                return ItemHelper.getStackFromString("ic2:plate",8);
-            case "ic2:resource:9"://tin block
-                return ItemHelper.getStackFromString("ic2:plate",17);
-            case "ic2:resource:7"://lead block
-                return ItemHelper.getStackFromString("ic2:plate",14);
-            case "ic2:ingot:3"://lead ingot
-                return ItemHelper.getStackFromString("ic2:plate",5);
-            case "ic2:plate:1"://copper plate
-                return ItemHelper.getStackFromString("ic2:casing",1);
-            case "ic2:plate:8"://tin plate
-                return ItemHelper.getStackFromString("ic2:casing",6);
-            case "ic2:plate:5"://lead plate
-                return ItemHelper.getStackFromString("ic2:casing",4);
-            case "ic2:plate:3"://iron plate
-                return ItemHelper.getStackFromString("ic2:casing",3);
-        }
-        return ItemStack.EMPTY;
-    }
-
-
     public void process() {
 
-        if(inventory.getCraftingGrid().getStackInSlot(0) == null) return;
-        ItemStack output = ForgeringRecipeOutput(inventory.getCraftingGrid().getStackInSlot(0));
+        ItemStack output = getOre();
         if(output == null || output.equals(ItemStack.EMPTY)) return;
         if( !world.isRemote) {
             outputQueue.push(output);
-            inventory.extractItem(0, 1, false);
         }
-        if(progress >= requiredProgress && progress > 0) {
+        /*if(kineticEnergy >= requiredKineticEnergy && kineticEnergy > 0) {
             playForgeSound();
-        }
-        progress = 0;
+        }*/
+        kineticEnergy = 0;
     }
 
     @SideOnly(Side.CLIENT)
@@ -216,8 +219,8 @@ public class TileDrillBase extends TileEntity implements ITickable {
         world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvent.REGISTRY.getObject(new ResourceLocation("block.anvil.land")),SoundCategory.BLOCKS,0.2f,1,false);
     }
 
-    public void setProgress(int progress) {
-        this.progress = progress;
+    public void setProgress(int kineticEnergy) {
+        this.kineticEnergy = kineticEnergy;
     }
 
     private void outputItemFromQueue() {
@@ -258,7 +261,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
         double y = pos.getY() + ((direction.getAxis() == EnumFacing.Axis.Y) ? 0.5 : 0.125)
                 + direction.getYOffset() * 0.625;
         double z = pos.getZ() + 0.5 + direction.getZOffset() * 0.625;
-        double speed = 1D;
+        double speed = 0.3D;
         double sx = direction.getXOffset() * speed;
         double sy = direction.getYOffset() * speed;
         double sz = direction.getZOffset() * speed;
@@ -270,27 +273,6 @@ public class TileDrillBase extends TileEntity implements ITickable {
         world.spawnEntity(entity);
     }
 
-    private class DrillItemCapabillity extends InventoryCraftingWrapper {
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-
-            if(world == null || world.isRemote) return;
-
-            ItemStack newResult = ForgeringRecipeOutput(inventory.getCraftingGrid().getStackInSlot(0));
-            int newRequiredProgress = getProgressRequired();
-
-            if(!ItemStack.areItemStackTagsEqual(newResult, getResult())
-                    || newRequiredProgress != requiredProgress) {
-                result = newResult;
-                progress = 0;
-                requiredProgress = getProgressRequired();
-            }
-
-            TileDrillBase.this.markDirty();
-        }
-    }
-
     public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
         this.readFromNBT(tag);
     }
@@ -299,24 +281,23 @@ public class TileDrillBase extends TileEntity implements ITickable {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setTag("inventory", inventory.serializeNBT());
-        compound.setInteger("progress", progress);
-        compound.setInteger("required_progress", requiredProgress);
+        compound.setInteger("kineticEnergy", kineticEnergy);
         compound.setTag("result", result.serializeNBT());
-        compound.setInteger("output_cooldown", outputCooldown);
-        compound.setTag("output_queue", outputQueue.serializeNBT());
+        compound.setInteger("outputCooldown", outputCooldown);
+        compound.setTag("outputQqueue", outputQueue.serializeNBT());
         compound.setTag("mech", mechCapability.serializeNBT());
+        compound.setInteger("currentY", currentY);
         return compound;
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        inventory.deserializeNBT(compound.getCompoundTag("inventory"));
-        progress = compound.getInteger("progress");
-        requiredProgress = compound.getInteger("required_progress");
+        kineticEnergy = compound.getInteger("kineticEnergy");
         result = new ItemStack(compound.getCompoundTag("result"));
-        outputQueue.deserializeNBT(compound.getTagList("output_queue", 10));
+        outputQueue.deserializeNBT(compound.getTagList("outputQueue", 10));
+        outputCooldown = compound.getInteger("outputCooldown");
         mechCapability.deserializeNBT(compound.getCompoundTag("mech"));
+        currentY = compound.getInteger("currentY");
     }
 }

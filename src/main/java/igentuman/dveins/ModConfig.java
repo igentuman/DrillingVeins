@@ -78,13 +78,13 @@ public class ModConfig {
         })
 
         public String[] ores_whitelist = new String[]{
-                "oreOreHardenedCoal",
-                "oreOreHardenedIron",
-                "oreOreHardenedCopper",
-                "oreOreHardenedTin",
-                "oreOreHardenedLead",
-                "oreOreHardenedGold",
-                "oreOreHardenedRedstone"
+                "oreCoalHardened",
+                "oreGoldHardened",
+                "oreCopperHardened",
+                "oreTinHardened",
+                "oreLeadHardened",
+                "oreGoldHardened",
+                "oreRedstoneHardened"
         };
     }
 

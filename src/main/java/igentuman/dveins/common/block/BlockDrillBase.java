@@ -4,6 +4,8 @@ package igentuman.dveins.common.block;
 import igentuman.dveins.DVeins;
 import igentuman.dveins.common.tile.TileDrillBase;
 import igentuman.dveins.common.tile.TileElectricMotor;
+import mysticalmechanics.tileentity.TileEntityAxle;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -99,5 +101,10 @@ public class BlockDrillBase extends BlockHorizontal {
 
         playerIn.openGui(DVeins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return true;
+    }
+
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+        TileDrillBase tile = (TileDrillBase)world.getTileEntity(pos);
+        tile.neighborChanged(fromPos);
     }
 }

@@ -75,6 +75,12 @@ public class ModConfig {
         })
         public int energy_for_one_block = 2000;
 
+        @Config.Name("emerald_head_drill_fortune")
+        @Config.Comment({
+                "Acts like fortune enchant. Increases dropped items per harvested block of ore"
+        })
+        public int emerald_head_drill_fortune = 1;
+
         @Config.Name("diamond_drill_head_multiplier")
         @Config.Comment({
                 "Speed multiplier to harvest block with diamond head"

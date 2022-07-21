@@ -11,7 +11,6 @@ public class CommonProxy implements ISidedProxy {
 
     public void init(FMLInitializationEvent event)
     {
-        DVeinsOreDictionary.register();
     }
 
     @Override

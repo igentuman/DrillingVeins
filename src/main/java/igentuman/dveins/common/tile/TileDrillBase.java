@@ -4,19 +4,19 @@ import igentuman.dveins.DVeins;
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
 import igentuman.dveins.client.sound.SoundHandler;
-import igentuman.dveins.common.block.BlockDrillBase;
-import igentuman.dveins.common.block.BlockDrillHeadDiamond;
-import igentuman.dveins.common.block.DrillHead;
+import igentuman.dveins.common.block.*;
 import igentuman.dveins.common.capability.InputMechCapability;
 import igentuman.dveins.common.inventory.QueueItemHandler;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
 import mysticalmechanics.block.BlockAxle;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -33,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+
+import java.util.Random;
 
 import static igentuman.dveins.ore.OreGen.veinExtraBlocks;
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
@@ -54,6 +56,8 @@ public class TileDrillBase extends TileEntity implements ITickable {
     private SoundEvent soundEvent;
     @SideOnly(Side.CLIENT)
     private ISound activeSound;
+    private IBlockState firstOreBlockInVein;
+    private IBlockState drillHead = BlockAir.getStateById(0);
 
     public TileDrillBase() {
         super();
@@ -90,6 +94,10 @@ public class TileDrillBase extends TileEntity implements ITickable {
         } else {
             stopSound();
         }
+    }
+
+    public void neighborChanged(BlockPos from) {
+        checkDrillHead();
     }
 
     @SideOnly(Side.CLIENT)
@@ -188,13 +196,20 @@ public class TileDrillBase extends TileEntity implements ITickable {
         this.currentY = (int)message.currentY;
         this.activeFlag = (boolean) message.activeFlag;
         this.isRedstonePowered = message.isRedstonePowered;
+    }
 
+    private void checkDrillHead()
+    {
+        drillHead = world.getBlockState(getPos().down());
     }
 
     public boolean hasDrillHead()
     {
         if(getPos().getY()==0) return false;
-        return world.getBlockState(getPos().down()).getBlock() instanceof DrillHead;
+        if(world.isRemote) {
+            checkDrillHead();
+        }
+        return drillHead.getBlock() instanceof DrillHead;
     }
 
     @Override
@@ -204,6 +219,9 @@ public class TileDrillBase extends TileEntity implements ITickable {
         }
         if(!world.isRemote && currentY == -1) {
             currentY = getPos().getY();
+        }
+        if(!world.isRemote && !hasDrillHead()) {
+            checkDrillHead();
         }
         if(outputCooldown > 0 && !world.isRemote) {
             outputCooldown--;
@@ -216,25 +234,30 @@ public class TileDrillBase extends TileEntity implements ITickable {
             }
             return;
         }
-        activeFlag = false;
-        if(chunkHasVein() && hasDrillHead()) {
-            if(mechCapability.power > 0) {
-                rotateDrillHead((int) mechCapability.power);
-                activeFlag = true;
-            }
-            kineticEnergy += mechCapability.power*getDrillHeadMultiplier();
+        if(!world.isRemote) {
+            activeFlag = false;
+            if (chunkHasVein() && hasDrillHead()) {
+                if (mechCapability.power > 0) {
+                    rotateDrillHead((int) mechCapability.power);
+                    activeFlag = true;
+                    wasWorking = true;
+                }
+                kineticEnergy += mechCapability.power * getDrillHeadMultiplier();
 
-            if( !world.isRemote) {
-                ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
-            }
+                if (!world.isRemote) {
+                    ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
+                }
 
-            if(kineticEnergy >= requiredKineticEnergy) {
-                process();
-            }
+                if (kineticEnergy >= requiredKineticEnergy) {
+                    process();
+                }
 
-        } else {
-            if( !world.isRemote)
-                kineticEnergy = 0;
+            } else {
+                if (!world.isRemote) {
+                    kineticEnergy = 0;
+                    ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
+                }
+            }
         }
     }
 
@@ -246,7 +269,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
     public ItemStack getOre()
     {
         if(chunkHasVein()) {
-            return new ItemStack(getFirstOreBlockInChunk().getBlock());
+            return new ItemStack(getFirstOreBlockInVein().getBlock());
         }
         return ItemStack.EMPTY;
     }
@@ -269,7 +292,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
 
     public BlockPos firstOreBlockPos = null;
 
-    public IBlockState getFirstOreBlockInChunk()
+    public IBlockState getFirstOreBlockInVein()
     {
         for(int y = currentY; y > 1; y--) {
             for (int x = -veinExtraBlocks; x < 16+veinExtraBlocks; x++) {
@@ -277,12 +300,14 @@ public class TileDrillBase extends TileEntity implements ITickable {
                     IBlockState st = world.getBlockState(new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z)));
                     if(RegistryHandler.oreBlocks.contains(st.getBlock())) {
                         firstOreBlockPos = new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z));
+                        firstOreBlockInVein = st;
                         return st;
                     }
                 }
             }
             currentY--;
         }
+        firstOreBlockInVein = null;
         firstOreBlockPos = null;
         return null;
     }
@@ -294,7 +319,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
         //do quit test first
         if(!chunkEmptyFlag /*&& OreGen.chunkHasVein(chunk.x, chunk.z, world.getSeed())*/) {
             //and then check chunk blocks actually
-            IBlockState st = getFirstOreBlockInChunk();
+            IBlockState st = getFirstOreBlockInVein();
             return st != null;
         }
         return false;
@@ -307,7 +332,16 @@ public class TileDrillBase extends TileEntity implements ITickable {
     }
 
     public void process() {
-        ItemStack output = getOre();
+        int fortune = 0;
+        if(world.getBlockState(pos.down()).getBlock() instanceof BlockDrillHeadEmerald) {
+            fortune = ModConfig.drilling.emerald_head_drill_fortune;
+        }
+        Random rand = new Random();
+        ItemStack output = new ItemStack(
+                firstOreBlockInVein.getBlock().getItemDropped(firstOreBlockInVein, rand, fortune),
+                ModConfig.oreGeneration.ore_chunks_per_block+(int)Math.ceil(rand.nextDouble()*fortune)
+        );
+
         if(output == null || output.equals(ItemStack.EMPTY)) return;
         if( !world.isRemote) {
             if(firstOreBlockPos != null) {

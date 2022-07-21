@@ -47,7 +47,7 @@ public class DVeins
         MinecraftForge.EVENT_BUS.register(this);
         ModPacketHandler.registerMessages(MODID);
         GameRegistry.registerWorldGenerator(new OreGen(), 0);
-
+        DVeinsOreDictionary.register();
     }
 
     @EventHandler

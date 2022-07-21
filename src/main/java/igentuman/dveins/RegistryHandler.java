@@ -1,13 +1,14 @@
 package igentuman.dveins;
 
 import igentuman.dveins.common.block.*;
+import igentuman.dveins.common.item.ItemOreChunk;
 import igentuman.dveins.common.tile.TileDrillBase;
 import igentuman.dveins.common.tile.TileElectricMotor;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -22,8 +23,6 @@ import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static igentuman.dveins.DVeins.MODID;
 
 @Mod.EventBusSubscriber
 public class RegistryHandler {
@@ -64,6 +63,21 @@ public class RegistryHandler {
     @ObjectHolder("dveins:drill_emerald_head")
     public static Block DRILL_EMERALD_HEAD = new BlockDrillHeadEmerald();
 
+    @ObjectHolder("dveins:copper_chunk")
+    public static ItemOreChunk CHUNK_COPPER = new ItemOreChunk();
+
+    @ObjectHolder("dveins:iron_chunk")
+    public static ItemOreChunk CHUNK_IRON = new ItemOreChunk();
+
+    @ObjectHolder("dveins:tin_chunk")
+    public static ItemOreChunk CHUNK_TIN = new ItemOreChunk();
+
+    @ObjectHolder("dveins:lead_chunk")
+    public static ItemOreChunk CHUNK_LEAD = new ItemOreChunk();
+
+    @ObjectHolder("dveins:gold_chunk")
+    public static ItemOreChunk CHUNK_GOLD = new ItemOreChunk();
+
     public static List<Block> oreBlocks = new ArrayList<>();
 
     @SubscribeEvent
@@ -103,6 +117,11 @@ public class RegistryHandler {
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
+        event.getRegistry().register(CHUNK_COPPER.setItemName("copper_chunk"));
+        event.getRegistry().register(CHUNK_IRON.setItemName("iron_chunk"));
+        event.getRegistry().register(CHUNK_TIN.setItemName("tin_chunk"));
+        event.getRegistry().register(CHUNK_LEAD.setItemName("lead_chunk"));
+        event.getRegistry().register(CHUNK_GOLD.setItemName("gold_chunk"));
         event.getRegistry().register(new ItemBlock(COAL_ORE).setRegistryName(COAL_ORE.getRegistryName()));
         event.getRegistry().register(new ItemBlock(IRON_ORE).setRegistryName(IRON_ORE.getRegistryName()));
         event.getRegistry().register(new ItemBlock(COPPER_ORE).setRegistryName(COPPER_ORE.getRegistryName()));
@@ -120,6 +139,11 @@ public class RegistryHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void registerModels(ModelRegistryEvent event) {
+        registerItemModel(CHUNK_COPPER, 0, "inventory");
+        registerItemModel(CHUNK_LEAD, 0, "inventory");
+        registerItemModel(CHUNK_TIN, 0, "inventory");
+        registerItemModel(CHUNK_IRON, 0, "inventory");
+        registerItemModel(CHUNK_GOLD, 0, "inventory");
         registerItemModel(Item.getItemFromBlock(COAL_ORE), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(IRON_ORE), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(COPPER_ORE), 0, "inventory");

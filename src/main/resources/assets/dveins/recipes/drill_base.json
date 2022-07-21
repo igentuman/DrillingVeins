@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ILI",
-    "LGL",
-    "III"
+    "IGI",
+    "BCB",
+    "IGI"
   ],
   "key": {
     "I": {
@@ -14,7 +14,11 @@
       "type": "forge:ore_dict",
       "ore": "gearIron"
     },
-    "L": {
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "chest"
+    },
+    "B": {
       "type": "forge:ore_dict",
       "ore": "leather"
     }

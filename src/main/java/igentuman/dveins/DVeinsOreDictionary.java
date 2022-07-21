@@ -13,5 +13,12 @@ public class DVeinsOreDictionary {
         OreDictionary.registerOre("oreTinHardened",new ItemStack(RegistryHandler.TIN_ORE));
         OreDictionary.registerOre("oreLeadHardened",new ItemStack(RegistryHandler.LEAD_ORE));
         OreDictionary.registerOre("oreGoldHardened",new ItemStack(RegistryHandler.GOLD_ORE));
+
+        OreDictionary.registerOre("chunkIron",new ItemStack(RegistryHandler.CHUNK_IRON));
+        OreDictionary.registerOre("chunkCopper",new ItemStack(RegistryHandler.CHUNK_COPPER));
+        OreDictionary.registerOre("chunkLead",new ItemStack(RegistryHandler.CHUNK_LEAD));
+        OreDictionary.registerOre("chunkTin",new ItemStack(RegistryHandler.CHUNK_TIN));
+        OreDictionary.registerOre("chunkGold",new ItemStack(RegistryHandler.CHUNK_GOLD));
+
     }
 }

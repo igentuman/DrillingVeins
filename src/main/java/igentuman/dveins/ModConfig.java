@@ -36,7 +36,7 @@ public class ModConfig {
                 "How often veins will appear in world",
                 "Bigger values means more rare veins (= 1/vein_channce)"
         })
-        public int vein_chance = 750;
+        public int vein_chance = 500;
 
         @Config.Name("max_vein_size")
         @Config.Comment({
@@ -50,13 +50,21 @@ public class ModConfig {
         })
         public int min_vein_size = 6000;
 
-        @Config.Name("small_piles_per_block")
+        @Config.Name("ore_chunks_per_block")
         @Config.Comment({
                 "How many pliles should drop from ore block",
                 "One pile equals one nugget"
         })
 
-        public int small_piles_per_block = 3;
+        public int ore_chunks_per_block = 2;
+
+        @Config.Name("small_piles_per_ore_chunk")
+        @Config.Comment({
+                "How many pliles should drop from ore block",
+                "One pile equals one nugget"
+        })
+
+        public int small_piles_per_ore_chunk = 2;
     }
 
     public static class Drilling {
@@ -65,7 +73,7 @@ public class ModConfig {
         @Config.Comment({
                 "How much kinetic (rotation) energy you need to harvest one block"
         })
-        public int energy_for_one_block = 1000;
+        public int energy_for_one_block = 2000;
 
         @Config.Name("diamond_drill_head_multiplier")
         @Config.Comment({

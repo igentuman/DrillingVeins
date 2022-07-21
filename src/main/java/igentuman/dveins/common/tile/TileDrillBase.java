@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static igentuman.dveins.ore.OreGen.veinExtraBlocks;
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
@@ -150,8 +151,8 @@ public class TileDrillBase extends TileEntity implements ITickable {
     {
         int counter = 0;
         for(int y = currentY; y > 1; y--) {
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
+            for (int x = -veinExtraBlocks; x < 16+veinExtraBlocks; x++) {
+                for (int z = -veinExtraBlocks; z < 16+veinExtraBlocks; z++) {
                     IBlockState st = world.getBlockState(new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z)));
                     if(RegistryHandler.oreBlocks.contains(st.getBlock())) {
                         counter++;
@@ -167,8 +168,8 @@ public class TileDrillBase extends TileEntity implements ITickable {
     public IBlockState getFirstOreBlockInChunk()
     {
         for(int y = currentY; y > 1; y--) {
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
+            for (int x = -veinExtraBlocks; x < 16+veinExtraBlocks; x++) {
+                for (int z = -veinExtraBlocks; z < 16+veinExtraBlocks; z++) {
                     IBlockState st = world.getBlockState(new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z)));
                     if(RegistryHandler.oreBlocks.contains(st.getBlock())) {
                         firstOreBlockPos = new BlockPos((chunk.x*16)+x, y, (chunk.z*16+z));

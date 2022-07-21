@@ -29,6 +29,7 @@ public class OreGen implements IWorldGenerator {
     public static long zSeed = 2212332449L;
     private int chunkID = 0;
     private int blocksCounter = 0;
+    public static int veinExtraBlocks = 4;
 
     private Block[] blocksToReplace = new Block[] {
             Blocks.STONE,
@@ -68,11 +69,13 @@ public class OreGen implements IWorldGenerator {
     private boolean shouldSpawn(int x, int y, int z, World world)
     {
         Random rand = new Random(world.getSeed()/10000 * chunkID * (x/2+1) * (y/2+1) * (z/2 + 1));
-        int xShift = Math.abs(8 - x);
-        int zShift = Math.abs(8 - z);
+        int xShift = Math.abs(8+veinExtraBlocks - x);
+        int zShift = Math.abs(8+veinExtraBlocks - z);
         int yShift = Math.abs(30 - y);
         int radius = (int) Math.sqrt(xShift*xShift+zShift*zShift);
         int horizontal = 0;
+        //always generate in center
+        if(xShift+zShift < 4) return true;
         int vertical = 0;
         try {
             if (xShift + zShift > 0) {
@@ -105,9 +108,10 @@ public class OreGen implements IWorldGenerator {
         if (minHeight < 0 || maxHeight > 256 || minHeight > maxHeight)
             throw new IllegalArgumentException("Illegal Height Arguments for WorldGenerator");
         for (int i=0; i<chancesToSpawn; i++){
-            int x = chunk_X * 16;
+
+            int x = chunk_X * 16-veinExtraBlocks;
             int y = maxHeight;
-            int z = chunk_Z * 16;
+            int z = chunk_Z * 16-veinExtraBlocks;
             generateVein(world, rand, blockAmount, x, y ,z , blockToGen);
         }
     }
@@ -133,12 +137,12 @@ public class OreGen implements IWorldGenerator {
     {
 
         for (int y = yOff; y > 1; y--) {
-            for (int x = xOff; x < 16 + xOff; x++) {
-                for (int z = zOff; z < 16 + zOff; z++) {
+            for (int x = xOff; x < 16 + veinExtraBlocks*2 + xOff; x++) {
+                for (int z = zOff; z < 16 + veinExtraBlocks*2 + zOff; z++) {
                     if(blocksCounter > amount) return;
                     if(
-                            (x-xOff == 0 && (z-zOff == 0 || z-zOff == 15)) ||
-                            (x-xOff == 15 && (z-zOff == 0 || z-zOff == 15))
+                            (x-xOff == 0 && (z-zOff == 0 || z-zOff == 15 + veinExtraBlocks*2 )) ||
+                            (x-xOff == 15 + veinExtraBlocks*2 && (z-zOff == 0 || z-zOff == 15 + veinExtraBlocks*2 ))
                     ) continue;
                     BlockPos pos = new BlockPos(x, y, z);
                     if(canPlace(pos, world) && shouldSpawn(x-xOff, y, z-zOff, world)) {

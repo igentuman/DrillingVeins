@@ -3,10 +3,13 @@ package igentuman.dveins.common.tile;
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
 import igentuman.dveins.common.block.BlockDrillBase;
+import igentuman.dveins.common.block.BlockDrillHeadDiamond;
+import igentuman.dveins.common.block.DrillHead;
 import igentuman.dveins.common.capability.InputMechCapability;
 import igentuman.dveins.common.inventory.QueueItemHandler;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
+import mysticalmechanics.block.BlockAxle;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -17,6 +20,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
@@ -25,6 +29,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.Arrays;
 
 import static igentuman.dveins.ore.OreGen.veinExtraBlocks;
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
@@ -76,6 +82,43 @@ public class TileDrillBase extends TileEntity implements ITickable {
         return super.getCapability(capability, facing);
     }
 
+    public int collectedRotation = 0;
+
+    public double getDrillHeadMultiplier()
+    {
+        if(world.getBlockState(pos.down()).getBlock() instanceof BlockDrillHeadDiamond) {
+            return ModConfig.drilling.diamond_drill_head_multiplier;
+        }
+        return 1D;
+    }
+
+    public void rotateDrillHead(int power)
+    {
+        collectedRotation += power;
+        if(collectedRotation < 45) return;
+        collectedRotation = 0;
+        IBlockState state = world.getBlockState(pos.down());
+        if(state.getBlock() instanceof DrillHead) {
+            DrillHead.EnumRotation curRotation = state.getValue(DrillHead.rotation);
+            boolean keyFound = false;
+            DrillHead.EnumRotation lastRotation = curRotation;
+            for(DrillHead.EnumRotation val: DrillHead.EnumRotation.values()) {
+                if(keyFound) {
+                    curRotation = val;
+                    break;
+                }
+                if(curRotation == val) {
+                    keyFound = true;
+                    continue;
+                }
+            }
+            if(lastRotation == curRotation) {
+                curRotation = DrillHead.EnumRotation.ONE;
+            }
+            world.setBlockState(pos.down(), state.withProperty(DrillHead.rotation, curRotation));
+        }
+    }
+
     public double getScaledProgress() {
         return kineticEnergy / (double) requiredKineticEnergy;
     }
@@ -103,6 +146,12 @@ public class TileDrillBase extends TileEntity implements ITickable {
         this.currentY = (int)message.currentY;
     }
 
+    public boolean hasDrillHead()
+    {
+        if(getPos().getY()==0) return false;
+        return world.getBlockState(getPos().down()).getBlock() instanceof DrillHead;
+    }
+
     @Override
     public void update() {
         if(!world.isRemote && currentY == -1) {
@@ -120,8 +169,11 @@ public class TileDrillBase extends TileEntity implements ITickable {
             return;
         }
 
-        if(chunkHasVein()) {
-            kineticEnergy += mechCapability.power;
+        if(chunkHasVein() && hasDrillHead()) {
+            if(mechCapability.power > 0) {
+                rotateDrillHead((int) mechCapability.power);
+            }
+            kineticEnergy += mechCapability.power*getDrillHeadMultiplier();
             if( !world.isRemote) {
                 ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
             }

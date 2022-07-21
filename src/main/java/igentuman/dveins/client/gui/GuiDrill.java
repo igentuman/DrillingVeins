@@ -74,10 +74,14 @@ public class GuiDrill extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         this.fontRenderer.drawString(I18n.format("container.drill"), 28, 6, 4210752);
+        if(!container.hasDrillHead()) {
+            this.fontRenderer.drawString(I18n.format("container.drill.missing_drill_head"), 6, 36, 4210752);
+            return;
+        }
         if(container.ore != ItemStack.EMPTY) {
-            this.fontRenderer.drawString(I18n.format("container.drill.ore", container.ore.getDisplayName()), 6, 16, 4210752);
-            this.fontRenderer.drawString(I18n.format("container.drill.ore_left", container.getBlocksLeft()), 6, 26, 4210752);
-            this.fontRenderer.drawString(I18n.format("container.drill.current_y", container.getCurrentY()), 6, 36, 4210752);
+            this.fontRenderer.drawString(I18n.format("container.drill.ore", container.ore.getDisplayName()), 6, 36, 4210752);
+            this.fontRenderer.drawString(I18n.format("container.drill.ore_left", container.getBlocksLeft()), 6, 46, 4210752);
+            this.fontRenderer.drawString(I18n.format("container.drill.current_y", container.getCurrentY()), 6, 56, 4210752);
         }
     }
 }

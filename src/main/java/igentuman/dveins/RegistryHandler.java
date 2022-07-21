@@ -61,6 +61,9 @@ public class RegistryHandler {
     @ObjectHolder("dveins:drill_diamond_head")
     public static Block DRILL_DIAMOND_HEAD = new BlockDrillHeadDiamond();
 
+    @ObjectHolder("dveins:drill_emerald_head")
+    public static Block DRILL_EMERALD_HEAD = new BlockDrillHeadEmerald();
+
     public static List<Block> oreBlocks = new ArrayList<>();
 
     @SubscribeEvent
@@ -84,6 +87,7 @@ public class RegistryHandler {
         event.getRegistry().register(DRILL_BASE);
         event.getRegistry().register(DRILL_IRON_HEAD);
         event.getRegistry().register(DRILL_DIAMOND_HEAD);
+        event.getRegistry().register(DRILL_EMERALD_HEAD);
         event.getRegistry().register(ELECTRIC_MOTOR);
 
         GameRegistry.registerTileEntity(
@@ -109,6 +113,7 @@ public class RegistryHandler {
         event.getRegistry().register(new ItemBlock(DRILL_BASE).setRegistryName(DRILL_BASE.getRegistryName()));
         event.getRegistry().register(new ItemBlock(ELECTRIC_MOTOR).setRegistryName(ELECTRIC_MOTOR.getRegistryName()));
         event.getRegistry().register(new ItemBlock(DRILL_DIAMOND_HEAD).setRegistryName(DRILL_DIAMOND_HEAD.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(DRILL_EMERALD_HEAD).setRegistryName(DRILL_EMERALD_HEAD.getRegistryName()));
         event.getRegistry().register(new ItemBlock(DRILL_IRON_HEAD).setRegistryName(DRILL_IRON_HEAD.getRegistryName()));
      }
 
@@ -125,6 +130,7 @@ public class RegistryHandler {
         registerItemModel(Item.getItemFromBlock(DRILL_BASE), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(ELECTRIC_MOTOR), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(DRILL_DIAMOND_HEAD), 0, "inventory");
+        registerItemModel(Item.getItemFromBlock(DRILL_EMERALD_HEAD), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(DRILL_IRON_HEAD), 0, "inventory");
         //ClientRegistry.bindTileEntitySpecialRenderer(TileDrill.class, new DrillTESR());
     }

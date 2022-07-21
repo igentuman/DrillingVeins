@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDrillHeadIron extends Block {
+public class BlockDrillHeadIron extends DrillHead {
 
     public BlockDrillHeadIron() {
         super(Material.IRON);

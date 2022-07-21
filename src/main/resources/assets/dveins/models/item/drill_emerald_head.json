@@ -3,8 +3,7 @@
 	"parent": "block/block",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "dveins:blocks/diamond_drill",
-		"particle": "dveins:blocks/diamond_drill"
+		"1": "dveins:blocks/emerald_drill"
 	},
 	"elements": [
 		{

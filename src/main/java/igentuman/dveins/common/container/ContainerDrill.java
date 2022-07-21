@@ -22,6 +22,11 @@ public class ContainerDrill extends Container {
         return drill.kineticEnergy;
     }
 
+    public boolean hasDrillHead()
+    {
+        return drill.hasDrillHead();
+    }
+
     public int getCurrentY()
     {
         return drill.getCurrentY();

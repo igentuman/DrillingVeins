@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "dveins:drill_iron_head"
+    "model": "dveins:drill_emerald_head"
   },
   "variants": {
     "rotation": {

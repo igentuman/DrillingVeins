@@ -26,12 +26,12 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
         return isRedstonePowered;
     }
 
-    public boolean isWorking() {
-        return isWorking;
+    public boolean isActive() {
+        return activeFlag;
     }
 
     private boolean isRedstonePowered = false;
-    private boolean isWorking = false;
+    private boolean activeFlag = false;
 
     public TileEntity getTopTe() {
         return topTe;
@@ -86,17 +86,17 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
         bottomTe = world.getTileEntity(getPos().add(0,-1,0));
         if(world.isRemote) return;
         if(world.getRedstonePowerFromNeighbors(getPos()) > 0) {
-            if(isWorking) {
-                isWorking = false;
+            if(activeFlag) {
+                activeFlag = false;
                 ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
 
             }
             return;
         }
         if (getEnergyStored() < electricMotor.rf_per_tick) return;
-        boolean wasWorking = isWorking;
+        boolean wasWorking = activeFlag;
 
-        if(isWorking || (isWorking != wasWorking)) {
+        if(activeFlag || (activeFlag != wasWorking)) {
             if( !world.isRemote) {
                 ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
             }
@@ -109,15 +109,17 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
                 this.pos,
                 0,
                 0,
-                getEnergyStored()
+                getEnergyStored(),
+                activeFlag,
+                isRedstonePowered
         );
     }
 
     public void onTileUpdatePacket(TileProcessUpdatePacket message)
     {
         setEnergyStored(message.energyStored);
-       // isWorking = message.isWorking;
-        //isRedstonePowered = message.isRedstonePowered;
+        activeFlag = message.activeFlag;
+        isRedstonePowered = message.isRedstonePowered;
     }
 
     @Override
@@ -162,7 +164,7 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setBoolean("isWorking", isWorking);
+        compound.setBoolean("activeFlag", activeFlag);
         compound.setBoolean("isRedstonePowered", isRedstonePowered);
         compound.setInteger("energyStored", getEnergyStored());
         return compound;
@@ -171,7 +173,7 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        isWorking = compound.getBoolean("isWorking");
+        activeFlag = compound.getBoolean("activeFlag");
         isRedstonePowered = compound.getBoolean("isRedstonePowered");
         setEnergyStored(compound.getInteger("energyStored"));
     }

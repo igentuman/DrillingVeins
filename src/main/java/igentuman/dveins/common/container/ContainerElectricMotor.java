@@ -18,9 +18,9 @@ public class ContainerElectricMotor extends Container {
     }
 
 
-    public boolean isWorking()
+    public boolean isActive()
     {
-        return motor.isWorking();
+        return motor.isActive();
     }
 
 

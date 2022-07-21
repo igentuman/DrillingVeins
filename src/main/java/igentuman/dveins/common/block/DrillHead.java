@@ -1,5 +1,6 @@
 package igentuman.dveins.common.block;
 
+import igentuman.dveins.common.tile.TileDrillBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -7,6 +8,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.IStringSerializable;
@@ -66,18 +68,21 @@ public abstract class DrillHead extends Block {
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand)
     {
-        double x = pos.getX();
-        double y = pos.getY();
-        double z = pos.getZ();
+        TileEntity te = world.getTileEntity(pos.up());
+        if(te instanceof TileDrillBase && ((TileDrillBase) te).isActive()) {
+            double x = pos.getX();
+            double y = pos.getY();
+            double z = pos.getZ();
 
-        world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y, z+0.5D, 0,0.1, 0, 1);
-        world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y+0.9D, z+0.2D, 0,0.1, 0, 1);
-        world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y+0.9D, z+0.8D, 0,0.1, 0, 1);
-        world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y+0.9D, z+0.2D, 0,0.1, 0, 49);
-        world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y+0.9D, z+0.8D, 0,0.1, 0, 49);
-        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.9D, y+0.5D, z+0.5D, 0.02, 0, 0);
-        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.1D, y+0.5D, z+0.5D, -0.02, 0, 0);
-        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.5D, y+0.5D, z+0.9D, 0, 0, 0.02);
-        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.5D, y+0.5D, z+0.1D, 0, 0, -0.02);
+            world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y, z + 0.5D, 0, 0.1, 0, 1);
+            world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y + 0.9D, z + 0.2D, 0, 0.1, 0, 1);
+            world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y + 0.9D, z + 0.8D, 0, 0.1, 0, 1);
+            world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y + 0.9D, z + 0.2D, 0, 0.1, 0, 49);
+            world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, x + 0.5D, y + 0.9D, z + 0.8D, 0, 0.1, 0, 49);
+            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.9D, y + 0.5D, z + 0.5D, 0.02, 0, 0);
+            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.1D, y + 0.5D, z + 0.5D, -0.02, 0, 0);
+            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.5D, y + 0.5D, z + 0.9D, 0, 0, 0.02);
+            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + 0.5D, y + 0.5D, z + 0.1D, 0, 0, -0.02);
+        }
     }
 }

@@ -1,7 +1,9 @@
 package igentuman.dveins.common.tile;
 
+import igentuman.dveins.DVeins;
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
+import igentuman.dveins.client.sound.SoundHandler;
 import igentuman.dveins.common.block.BlockDrillBase;
 import igentuman.dveins.common.block.BlockDrillHeadDiamond;
 import igentuman.dveins.common.block.DrillHead;
@@ -12,6 +14,8 @@ import igentuman.dveins.network.TileProcessUpdatePacket;
 import mysticalmechanics.block.BlockAxle;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +24,6 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
@@ -30,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 
 import static igentuman.dveins.ore.OreGen.veinExtraBlocks;
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
@@ -46,6 +48,12 @@ public class TileDrillBase extends TileEntity implements ITickable {
     private int currentY = -1;
     private boolean chunkEmptyFlag = false;
     private Chunk chunk;
+    private boolean activeFlag = false;
+    private boolean wasWorking = false;
+    private boolean isRedstonePowered = false;
+    private SoundEvent soundEvent;
+    @SideOnly(Side.CLIENT)
+    private ISound activeSound;
 
     public TileDrillBase() {
         super();
@@ -54,6 +62,51 @@ public class TileDrillBase extends TileEntity implements ITickable {
         kineticEnergy = 0;
         outputCooldown = 0;
         outputQueue = new QueueItemHandler();
+        soundEvent = new SoundEvent(new ResourceLocation(DVeins.MODID, "active_boring"));
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected void setSoundEvent(SoundEvent event) {
+        this.soundEvent = event;
+        SoundHandler.stopTileSound(getPos());
+    }
+    private int playSoundCooldown = 0;
+    private long lastActive = -1;
+    private int rapidChangeThreshold = 10;
+
+    @SideOnly(Side.CLIENT)
+    private void updateSound() {
+
+        if(soundEvent == null) return;
+        if (isActive()) {
+            if (--playSoundCooldown > 0) {
+                return;
+            }
+
+            if ((activeSound == null || !Minecraft.getMinecraft().getSoundHandler().isSoundPlaying(activeSound))) {
+                activeSound = SoundHandler.startTileSound(soundEvent.getSoundName(), 0.9F, getPos());
+            }
+            playSoundCooldown = 20;
+        } else {
+            stopSound();
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected void stopSound()
+    {
+        long downtime = world.getTotalWorldTime() - lastActive;
+        if (activeSound != null && downtime > rapidChangeThreshold) {
+            SoundHandler.stopTileSound(getPos());
+            activeSound = null;
+            playSoundCooldown = 0;
+        }
+    }
+
+    public void invalidate()
+    {
+        super.invalidate();
+        stopSound();
     }
 
     public int getCurrentY()
@@ -119,31 +172,23 @@ public class TileDrillBase extends TileEntity implements ITickable {
         }
     }
 
-    public double getScaledProgress() {
-        return kineticEnergy / (double) requiredKineticEnergy;
-    }
-
-    public int getAdjustedProgress() {
-        if(outputQueue.isEmpty()) {
-            return kineticEnergy;
-        }
-        else {
-            return requiredKineticEnergy;
-        }
-    }
-
     public TileProcessUpdatePacket getTileUpdatePacket() {
         return new TileProcessUpdatePacket(
                 this.pos,
                 this.kineticEnergy,
                 this.currentY,
-                0
+                0,
+                activeFlag,
+                isRedstonePowered
         );
     }
 
     public void onTileUpdatePacket(TileProcessUpdatePacket message) {
         this.kineticEnergy = (int)message.kineticEnergy;
         this.currentY = (int)message.currentY;
+        this.activeFlag = (boolean) message.activeFlag;
+        this.isRedstonePowered = message.isRedstonePowered;
+
     }
 
     public boolean hasDrillHead()
@@ -154,6 +199,9 @@ public class TileDrillBase extends TileEntity implements ITickable {
 
     @Override
     public void update() {
+        if (world.isRemote) {
+            updateSound();
+        }
         if(!world.isRemote && currentY == -1) {
             currentY = getPos().getY();
         }
@@ -168,12 +216,14 @@ public class TileDrillBase extends TileEntity implements ITickable {
             }
             return;
         }
-
+        activeFlag = false;
         if(chunkHasVein() && hasDrillHead()) {
             if(mechCapability.power > 0) {
                 rotateDrillHead((int) mechCapability.power);
+                activeFlag = true;
             }
             kineticEnergy += mechCapability.power*getDrillHeadMultiplier();
+
             if( !world.isRemote) {
                 ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
             }
@@ -188,16 +238,18 @@ public class TileDrillBase extends TileEntity implements ITickable {
         }
     }
 
+    public boolean isActive()
+    {
+        return activeFlag;
+    }
+
     public ItemStack getOre()
     {
         if(chunkHasVein()) {
-
             return new ItemStack(getFirstOreBlockInChunk().getBlock());
         }
         return ItemStack.EMPTY;
     }
-
-
 
     public int blocksInVein()
     {
@@ -254,9 +306,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
                 bs.getValue(BlockDrillBase.FACING) : EnumFacing.DOWN;
     }
 
-
     public void process() {
-
         ItemStack output = getOre();
         if(output == null || output.equals(ItemStack.EMPTY)) return;
         if( !world.isRemote) {
@@ -266,28 +316,13 @@ public class TileDrillBase extends TileEntity implements ITickable {
                 firstOreBlockPos = null;
             }
         }
-        /*if(kineticEnergy >= requiredKineticEnergy && kineticEnergy > 0) {
-            playForgeSound();
-        }*/
         kineticEnergy = 0;
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void playForgeSound()
-    {
-        world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvent.REGISTRY.getObject(new ResourceLocation("block.anvil.land")),SoundCategory.BLOCKS,0.2f,1,false);
-    }
-
-    public void setProgress(int kineticEnergy) {
-        this.kineticEnergy = kineticEnergy;
     }
 
     private void outputItemFromQueue() {
         if (outputQueue.isEmpty()) return;
-
         ItemStack stack = outputQueue.peek();
         stack = outputItem(stack);
-
         if (stack.isEmpty()) {
             outputQueue.pop();
         }
@@ -317,10 +352,9 @@ public class TileDrillBase extends TileEntity implements ITickable {
 
     private void dropItem(ItemStack stack, EnumFacing direction) {
         double x = pos.getX() + 0.5 + direction.getXOffset() * 0.625;
-        double y = pos.getY() + ((direction.getAxis() == EnumFacing.Axis.Y) ? 0.5 : 0.125)
-                + direction.getYOffset() * 0.625;
+        double y = pos.getY() + 0.2 + direction.getYOffset() * 0.625;
         double z = pos.getZ() + 0.5 + direction.getZOffset() * 0.625;
-        double speed = 0.3D;
+        double speed = 0.2D;
         double sx = direction.getXOffset() * speed;
         double sy = direction.getYOffset() * speed;
         double sz = direction.getZOffset() * speed;
@@ -346,6 +380,7 @@ public class TileDrillBase extends TileEntity implements ITickable {
         compound.setTag("outputQqueue", outputQueue.serializeNBT());
         compound.setTag("mech", mechCapability.serializeNBT());
         compound.setInteger("currentY", currentY);
+        compound.setBoolean("activeFlag", activeFlag);
         return compound;
     }
 
@@ -358,5 +393,6 @@ public class TileDrillBase extends TileEntity implements ITickable {
         outputCooldown = compound.getInteger("outputCooldown");
         mechCapability.deserializeNBT(compound.getCompoundTag("mech"));
         currentY = compound.getInteger("currentY");
+        activeFlag = compound.getBoolean("activeFlag");
     }
 }

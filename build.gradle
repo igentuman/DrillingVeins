@@ -114,7 +114,7 @@ jar {
                 "Implementation-Title": project.name,
                 "Implementation-Version": "${version}",
                 "Implementation-Vendor" : "igentuman",
-                "FMLAT": "evolvo_at.cfg",
+                "FMLAT": "dveins_at.cfg",
                 "FMLCorePlugin": "igentuman.dveins.reflection.ReflectorsPlugin",
                 "FMLCorePluginContainsFMLMod": "true",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")

@@ -35,7 +35,7 @@ public class DVeins
     @Mod.Instance("dveins")
     public static DVeins instance;
         
-    @SidedProxy(serverSide="igentuman.dveins.common.ServerProxy", clientSide="igentuman.dveins.client.ClientProxy")
+    @SidedProxy(serverSide="igentuman.dveins.common.CommonProxy", clientSide="igentuman.dveins.client.ClientProxy")
     public static ISidedProxy proxy;
 
     public Logger logger;

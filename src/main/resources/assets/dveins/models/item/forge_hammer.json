@@ -1,0 +1,11 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "front": "dveins:blocks/forge_hammer/output",
+    "side": "dveins:blocks/forge_hammer/input",
+    "south": "dveins:blocks/forge_hammer/side",
+    "top": "dveins:blocks/forge_hammer/top",
+    "down": "dveins:blocks/forge_hammer/side",
+    "particle": "dveins:blocks/forge_hammer/side"
+  }
+}

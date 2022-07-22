@@ -17,5 +17,12 @@ public class ModPacketHandler {
                 packetId++,
                 Side.CLIENT
         );
+
+        instance.registerMessage(
+                PacketUpdateItemStack.Handler.class,
+                PacketUpdateItemStack.class,
+                packetId++,
+                Side.CLIENT
+        );
     }
 }

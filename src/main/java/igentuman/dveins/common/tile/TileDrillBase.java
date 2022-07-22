@@ -54,6 +54,9 @@ public class TileDrillBase extends TileEntity implements ITickable {
     private boolean wasWorking = false;
     private boolean isRedstonePowered = false;
     private SoundEvent soundEvent;
+    private int playSoundCooldown = 0;
+    private long lastActive = -1;
+    private int rapidChangeThreshold = 10;
     @SideOnly(Side.CLIENT)
     private ISound activeSound;
     private IBlockState firstOreBlockInVein;
@@ -74,21 +77,16 @@ public class TileDrillBase extends TileEntity implements ITickable {
         this.soundEvent = event;
         SoundHandler.stopTileSound(getPos());
     }
-    private int playSoundCooldown = 0;
-    private long lastActive = -1;
-    private int rapidChangeThreshold = 10;
 
     @SideOnly(Side.CLIENT)
     private void updateSound() {
-
         if(soundEvent == null) return;
         if (isActive()) {
             if (--playSoundCooldown > 0) {
                 return;
             }
-
             if ((activeSound == null || !Minecraft.getMinecraft().getSoundHandler().isSoundPlaying(activeSound))) {
-                activeSound = SoundHandler.startTileSound(soundEvent.getSoundName(), 0.9F, getPos());
+                activeSound = SoundHandler.startTileSound(soundEvent.getSoundName(), 1F, getPos());
             }
             playSoundCooldown = 20;
         } else {
@@ -127,11 +125,9 @@ public class TileDrillBase extends TileEntity implements ITickable {
         if (capability == ITEM_HANDLER_CAPABILITY) {
             return true;
         }
-
         if (capability == MECH_CAPABILITY && facing != null && facing == EnumFacing.UP) {
             return true;
         }
-
         return super.hasCapability(capability, facing);
     }
 
@@ -226,7 +222,6 @@ public class TileDrillBase extends TileEntity implements ITickable {
         if(outputCooldown > 0 && !world.isRemote) {
             outputCooldown--;
         }
-
         if(!outputQueue.isEmpty() && !world.isRemote) {
             if(outputCooldown <= 0) {
                 outputItemFromQueue();
@@ -243,7 +238,6 @@ public class TileDrillBase extends TileEntity implements ITickable {
                     wasWorking = true;
                 }
                 kineticEnergy += mechCapability.power * getDrillHeadMultiplier();
-
                 if (!world.isRemote) {
                     ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
                 }
@@ -251,7 +245,6 @@ public class TileDrillBase extends TileEntity implements ITickable {
                 if (kineticEnergy >= requiredKineticEnergy) {
                     process();
                 }
-
             } else {
                 if (!world.isRemote) {
                     kineticEnergy = 0;

@@ -46,5 +46,6 @@ public class GuiElectricMotor extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         this.fontRenderer.drawString(I18n.format("container.electric_motor"), 8, 6, 4210752);
+        this.fontRenderer.drawString(I18n.format("container.electric_motor.energy", container.getEnergyStored()), 8, 16, 4210752);
     }
 }

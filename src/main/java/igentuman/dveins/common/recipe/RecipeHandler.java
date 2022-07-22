@@ -2,6 +2,7 @@ package igentuman.dveins.common.recipe;
 
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
+import igentuman.dveins.util.ItemHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -12,6 +13,7 @@ import static net.minecraftforge.oredict.OreDictionary.EMPTY_LIST;
 
 public class RecipeHandler {
 
+    public static final RecipeManager<ForgeHammerRecipe> FORGE_HAMMER = new RecipeManager<>();
     public static ItemStack getStackFromOreDict(String oredict)
     {
         NonNullList<ItemStack> ent = OreDictionary.getOres(oredict);
@@ -24,6 +26,42 @@ public class RecipeHandler {
     public static void register()
     {
         registerSmelting();
+        registerForgeHammer();
+    }
+
+    public static void registerForgeHammer()
+    {
+        addForgeHammerRecipeForOre("ingotIron", 1,"plateIron", 1);
+        addForgeHammerRecipeForOre("ingotCopper", 1,"plateCopper", 1);
+        addForgeHammerRecipeForOre("ingotTin", 1,"plateTin", 1);
+        addForgeHammerRecipeForOre("ingotLead", 1,"plateLead", 1);
+        addForgeHammerRecipeForOre("ingotBronze", 1,"plateBronze", 1);
+        addForgeHammerRecipeForOre("ingotGold", 1,"plateGold", 1);
+
+        addForgeHammerRecipeForOre("plateGold", 1,"casingGold", 2);
+        addForgeHammerRecipeForOre("plateIron", 1,"casingIron", 2);
+        addForgeHammerRecipeForOre("plateTin", 1,"casingTin", 2);
+        addForgeHammerRecipeForOre("plateCopper", 1,"casingCopper", 2);
+        addForgeHammerRecipeForOre("plateBronze", 1,"casingBronze", 2);
+
+        addForgeHammerRecipeForOre("chunkIron", 1,"chunkDustIron", 2);
+        addForgeHammerRecipeForOre("chunkTin", 1,"chunkDustTin", 2);
+        addForgeHammerRecipeForOre("chunkGold", 1,"chunkDustGold", 2);
+        addForgeHammerRecipeForOre("chunkCopper", 1,"chunkDustCopper", 2);
+        addForgeHammerRecipeForOre("chunkLead", 1,"chunkDustLead", 2);
+    }
+
+    private static void addForgeHammerRecipeForOre(String input, int inputQty, String output, int outputQty)
+    {
+        ItemStack in =  getStackFromOreDict(input);
+        ItemStack out =  getStackFromOreDict(output);
+        if(out == null || in == null) return;
+        in.setCount(inputQty);
+        out.setCount(outputQty);
+        FORGE_HAMMER.add(new ForgeHammerRecipe(
+                in,
+                out
+        ));
     }
 
     public static void registerSmelting() {

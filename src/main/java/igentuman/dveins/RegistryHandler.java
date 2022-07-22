@@ -4,11 +4,11 @@ import igentuman.dveins.common.block.*;
 import igentuman.dveins.common.item.ItemOreChunk;
 import igentuman.dveins.common.tile.TileDrillBase;
 import igentuman.dveins.common.tile.TileElectricMotor;
+import igentuman.dveins.common.tile.TileForgeHammer;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -47,6 +47,9 @@ public class RegistryHandler {
 
     @ObjectHolder("dveins:gold_ore")
     public static Block GOLD_ORE = new BlockHardenedOre().setName("gold_ore");
+
+    @ObjectHolder("dveins:forge_hammer")
+    public static Block FORGE_HAMMER = new BlockForgeHammer();
 
     @ObjectHolder("dveins:drill_base")
     public static Block DRILL_BASE = new BlockDrillBase();
@@ -103,6 +106,7 @@ public class RegistryHandler {
         event.getRegistry().register(DRILL_DIAMOND_HEAD);
         event.getRegistry().register(DRILL_EMERALD_HEAD);
         event.getRegistry().register(ELECTRIC_MOTOR);
+        event.getRegistry().register(FORGE_HAMMER);
 
         GameRegistry.registerTileEntity(
                 TileDrillBase.class,
@@ -112,6 +116,11 @@ public class RegistryHandler {
         GameRegistry.registerTileEntity(
                 TileElectricMotor.class,
                 ELECTRIC_MOTOR.getRegistryName()
+        );
+
+        GameRegistry.registerTileEntity(
+                TileForgeHammer.class,
+                FORGE_HAMMER.getRegistryName()
         );
     }
 
@@ -131,6 +140,7 @@ public class RegistryHandler {
         event.getRegistry().register(new ItemBlock(REDSTONE_ORE).setRegistryName(REDSTONE_ORE.getRegistryName()));
         event.getRegistry().register(new ItemBlock(DRILL_BASE).setRegistryName(DRILL_BASE.getRegistryName()));
         event.getRegistry().register(new ItemBlock(ELECTRIC_MOTOR).setRegistryName(ELECTRIC_MOTOR.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(FORGE_HAMMER).setRegistryName(FORGE_HAMMER.getRegistryName()));
         event.getRegistry().register(new ItemBlock(DRILL_DIAMOND_HEAD).setRegistryName(DRILL_DIAMOND_HEAD.getRegistryName()));
         event.getRegistry().register(new ItemBlock(DRILL_EMERALD_HEAD).setRegistryName(DRILL_EMERALD_HEAD.getRegistryName()));
         event.getRegistry().register(new ItemBlock(DRILL_IRON_HEAD).setRegistryName(DRILL_IRON_HEAD.getRegistryName()));
@@ -153,6 +163,7 @@ public class RegistryHandler {
         registerItemModel(Item.getItemFromBlock(REDSTONE_ORE), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(DRILL_BASE), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(ELECTRIC_MOTOR), 0, "inventory");
+        registerItemModel(Item.getItemFromBlock(FORGE_HAMMER), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(DRILL_DIAMOND_HEAD), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(DRILL_EMERALD_HEAD), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(DRILL_IRON_HEAD), 0, "inventory");

@@ -2,10 +2,13 @@ package igentuman.dveins.network;
 
 import igentuman.dveins.client.gui.GuiDrill;
 import igentuman.dveins.client.gui.GuiElectricMotor;
+import igentuman.dveins.client.gui.GuiForgeHammer;
 import igentuman.dveins.common.container.ContainerDrill;
 import igentuman.dveins.common.container.ContainerElectricMotor;
+import igentuman.dveins.common.container.ContainerForgehammer;
 import igentuman.dveins.common.tile.TileDrillBase;
 import igentuman.dveins.common.tile.TileElectricMotor;
+import igentuman.dveins.common.tile.TileForgeHammer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +27,9 @@ public class GuiProxy implements IGuiHandler {
         if (te instanceof TileElectricMotor && id == 1) {
             return new ContainerElectricMotor((TileElectricMotor) te);
         }
+        if (te instanceof TileForgeHammer && id == 2) {
+            return new ContainerForgehammer(player.inventory, (TileForgeHammer) te);
+        }
         return null;
     }
 
@@ -36,6 +42,9 @@ public class GuiProxy implements IGuiHandler {
         }
         if (te instanceof TileElectricMotor && id == 1) {
             return new GuiElectricMotor(new ContainerElectricMotor((TileElectricMotor) te));
+        }
+        if (te instanceof TileForgeHammer && id == 2) {
+            return new GuiForgeHammer(new ContainerForgehammer(player.inventory, (TileForgeHammer) te));
         }
         return null;
     }

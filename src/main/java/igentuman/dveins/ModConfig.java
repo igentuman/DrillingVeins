@@ -7,6 +7,7 @@ public class ModConfig {
     public static OreGeneration oreGeneration = new OreGeneration();
     public static Drilling drilling = new Drilling();
     public static ElectricMotor electricMotor = new ElectricMotor();
+    public static ForgeHammer forgeHammer = new ForgeHammer();
 
     public static class OreGeneration {
 
@@ -121,6 +122,15 @@ public class ModConfig {
                 "Kinetic (rotation) energy per tick"
         })
         public int kinetic_energy_per_tick = 50;
+    }
+
+    public static class ForgeHammer {
+
+        @Config.Name("energy_per_recipe")
+        @Config.Comment({
+                "Kinetic energy required for recipe"
+        })
+        public int energy_per_recipe = 1000;
     }
 
 }

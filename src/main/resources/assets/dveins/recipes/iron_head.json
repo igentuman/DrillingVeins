@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GBG",
+    "GBG",
+    " G "
+  ],
+  "key": {
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "blockIron"
+    }
+  },
+  "result": {
+    "item": "dveins:drill_iron_head"
+  }
+}

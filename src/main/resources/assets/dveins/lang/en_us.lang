@@ -21,3 +21,7 @@ container.drill.ore=Ore in vein: %s
 container.drill.ore_left=Blocks left: %s
 container.drill.current_y=Current Height: %s
 container.drill.missing_drill_head=Drill Head Required
+description.diamond_drill_head=Mine speed: x%s
+description.emerald_drill_head=Mine with fortune level: %s
+description.drill_base=Place drill head at the bottom. \nConnect kinetic energy source on top
+description.electric_motor=Provides kinetic energy at the bottom. \nRequires %sRF per tick

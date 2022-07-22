@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GBG",
+    "GBG",
+    " G "
+  ],
+  "key": {
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "gemEmerald"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "blockEmerald"
+    }
+  },
+  "result": {
+    "item": "dveins:drill_emerald_head"
+  }
+}

@@ -1,6 +1,7 @@
 package igentuman.dveins;
 
 import igentuman.dveins.command.CommandHandler;
+import igentuman.dveins.common.recipe.RecipeHandler;
 import igentuman.dveins.network.GuiProxy;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.ore.OreGen;
@@ -48,6 +49,7 @@ public class DVeins
         ModPacketHandler.registerMessages(MODID);
         GameRegistry.registerWorldGenerator(new OreGen(), 0);
         DVeinsOreDictionary.register();
+
     }
 
     @EventHandler
@@ -56,6 +58,7 @@ public class DVeins
         proxy.init(event);
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiProxy());
+        RecipeHandler.register();
     }
 
     @SubscribeEvent

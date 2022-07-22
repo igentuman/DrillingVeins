@@ -1,13 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "IGI",
-    "BCB",
-    "IDI"
+    "IOI",
+    "BRB",
+    "IGI"
   ],
   "key": {
-    "D": {
-      "item": "minecraft:dropper"
+    "O": {
+      "item": "minecraft:observer"
     },
     "I": {
       "type": "forge:ore_dict",
@@ -17,15 +17,15 @@
       "type": "forge:ore_dict",
       "ore": "gearIron"
     },
-    "C": {
+    "R": {
       "type": "forge:ore_dict",
-      "ore": "chest"
+      "ore": "blockRedstone"
     },
     "B": {
       "item": "minecraft:iron_bars"
     }
   },
   "result": {
-    "item": "dveins:drill_base"
+    "item": "dveins:electric_motor"
   }
 }

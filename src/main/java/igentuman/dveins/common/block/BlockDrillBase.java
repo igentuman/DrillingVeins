@@ -2,6 +2,7 @@
 package igentuman.dveins.common.block;
 
 import igentuman.dveins.DVeins;
+import igentuman.dveins.ModConfig;
 import igentuman.dveins.common.tile.TileDrillBase;
 import igentuman.dveins.common.tile.TileElectricMotor;
 import mysticalmechanics.tileentity.TileEntityAxle;
@@ -10,6 +11,8 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,12 +22,17 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+
+import java.util.List;
 
 import static net.minecraft.inventory.InventoryHelper.spawnItemStack;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
@@ -106,5 +114,15 @@ public class BlockDrillBase extends BlockHorizontal {
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
         TileDrillBase tile = (TileDrillBase)world.getTileEntity(pos);
         tile.neighborChanged(fromPos);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack itemStack, @Nullable World world, List<String> currentTooltip, ITooltipFlag flag) {
+        super.addInformation(itemStack, world, currentTooltip, flag);
+        String[] parts = I18n.format("description.drill_base").split("\\\\n");
+        for(String line: parts) {
+            currentTooltip.add(TextFormatting.AQUA + line);
+        }
     }
 }

@@ -57,14 +57,6 @@ public class ModConfig {
         })
 
         public int ore_chunks_per_block = 2;
-
-        @Config.Name("small_piles_per_ore_chunk")
-        @Config.Comment({
-                "How many pliles should drop from ore block",
-                "One pile equals one nugget"
-        })
-
-        public int small_piles_per_ore_chunk = 2;
     }
 
     public static class Drilling {
@@ -80,6 +72,19 @@ public class ModConfig {
                 "Acts like fortune enchant. Increases dropped items per harvested block of ore"
         })
         public int emerald_head_drill_fortune = 1;
+
+        @Config.Name("chunk_smelting_product_qty")
+        @Config.Comment({
+                "How many items you will get by smelting one chunk"
+        })
+        public int chunk_smelting_product_qty = 3;
+
+        @Config.Name("chunk_smelting_product_type")
+        @Config.Comment({
+                "Possible values: nugget, ingot, block",
+                "So by default you will get 3 nuggets per chunk"
+        })
+        public String chunk_smelting_product_type = "nugget";
 
         @Config.Name("diamond_drill_head_multiplier")
         @Config.Comment({

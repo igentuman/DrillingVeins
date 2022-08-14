@@ -28,8 +28,8 @@ public class CTRecipes {
 		}
 		
 		@ZenMethod
-		public static void removeRecipeWithInput(IIngredient input1, IIngredient input2) {
-			CraftTweakerAPI.apply(new CTRemoveRecipe(getRecipeHandler(), IngredientSorption.INPUT, Lists.newArrayList(input1, input2)));
+		public static void removeRecipeWithInput(IIngredient input1) {
+			CraftTweakerAPI.apply(new CTRemoveRecipe(getRecipeHandler(), IngredientSorption.INPUT, Lists.newArrayList(input1)));
 		}
 		
 		@ZenMethod

@@ -1,7 +1,7 @@
 package igentuman.dveins;
 
 import igentuman.dveins.command.CommandHandler;
-import igentuman.dveins.common.recipe.RecipeHandler;
+import igentuman.dveins.recipe.RecipeHandler;
 import igentuman.dveins.network.GuiProxy;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.ore.OreGen;
@@ -48,14 +48,13 @@ public class DVeins
         MinecraftForge.EVENT_BUS.register(this);
         ModPacketHandler.registerMessages(MODID);
         GameRegistry.registerWorldGenerator(new OreGen(), 0);
-        DVeinsOreDictionary.register();
-
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event)  {
         logger.info("Starting Initialization.");
         proxy.init(event);
+        DVeinsOreDictionary.register();
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiProxy());
         RecipeHandler.register();

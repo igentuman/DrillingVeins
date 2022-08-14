@@ -1,4 +1,4 @@
-package igentuman.dveins.common.recipe;
+package igentuman.dveins.recipe;
 
 import net.minecraft.item.ItemStack;
 

@@ -1,4 +1,4 @@
-package igentuman.dveins.common.recipe;
+package igentuman.dveins.recipe;
 
 import igentuman.dveins.util.ItemHelper;
 import net.minecraft.item.ItemStack;
@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class IngredientItemStack implements IRecipeIngredient {
+
     protected final ItemStack stack;
     private final List<ItemStack> stacks;
 

@@ -1,4 +1,4 @@
-package igentuman.dveins.common.recipe;
+package igentuman.dveins.recipe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

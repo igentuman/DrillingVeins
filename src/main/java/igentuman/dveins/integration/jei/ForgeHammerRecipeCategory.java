@@ -1,7 +1,7 @@
 package igentuman.dveins.integration.jei;
 
 import com.google.common.collect.ImmutableList;
-import igentuman.dveins.common.recipe.ForgeHammerRecipe;
+import igentuman.dveins.recipe.ForgeHammerRecipe;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;

@@ -8,6 +8,7 @@ public class ModConfig {
     public static Drilling drilling = new Drilling();
     public static ElectricMotor electricMotor = new ElectricMotor();
     public static ForgeHammer forgeHammer = new ForgeHammer();
+    public static Customizations customizations = new Customizations();
 
     public static class OreGeneration {
 
@@ -131,6 +132,20 @@ public class ModConfig {
                 "Kinetic energy required for recipe"
         })
         public int energy_per_recipe = 1000;
+    }
+
+    public static class Customizations {
+
+        @Config.Name("ore_dict_mod_priority")
+        @Config.Comment({
+                "Prioritise machines output for specific mod items"
+        })
+        public String[] ore_dict_mod_priority = new String[]{
+                    "dveins",
+                    "immersiveengineering",
+                    "ic2",
+                    "mekanism"
+        };;
     }
 
 }

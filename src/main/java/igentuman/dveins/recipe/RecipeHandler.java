@@ -1,19 +1,26 @@
-package igentuman.dveins.common.recipe;
+package igentuman.dveins.recipe;
 
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
-import igentuman.dveins.util.ItemHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 import static net.minecraftforge.oredict.OreDictionary.EMPTY_LIST;
 
-public class RecipeHandler {
+public class RecipeHandler extends BasicRecipeHandler{
 
     public static final RecipeManager<ForgeHammerRecipe> FORGE_HAMMER = new RecipeManager<>();
+
+    public RecipeHandler(@NotNull String name, int itemInputSize, int fluidInputSize, int itemOutputSize, int fluidOutputSize) {
+        super(name, itemInputSize, fluidInputSize, itemOutputSize, fluidOutputSize);
+    }
+
     public static ItemStack getStackFromOreDict(String oredict)
     {
         NonNullList<ItemStack> ent = OreDictionary.getOres(oredict);
@@ -25,9 +32,9 @@ public class RecipeHandler {
 
     public static void register()
     {
-        registerSmelting();
-        registerForgeHammer();
+        new RecipeHandler("forge_hammer", 1, 0, 1, 0);
     }
+
 
     public static void registerForgeHammer()
     {
@@ -64,7 +71,7 @@ public class RecipeHandler {
         ));
     }
 
-    public static void registerSmelting() {
+    public void registerSmelting() {
         String prefix = ModConfig.drilling.chunk_smelting_product_type;
         addChunkSmeltingForOre(RegistryHandler.CHUNK_IRON, prefix+"Iron");
         addChunkSmeltingForOre(RegistryHandler.CHUNK_COPPER, prefix+"Copper");
@@ -73,12 +80,23 @@ public class RecipeHandler {
         addChunkSmeltingForOre(RegistryHandler.CHUNK_GOLD, prefix+"Gold");
     }
 
-    private static void addChunkSmeltingForOre(Item chunk, String name)
+    private void addChunkSmeltingForOre(Item chunk, String name)
     {
         int i = ModConfig.drilling.chunk_smelting_product_qty;
         ItemStack out =  getStackFromOreDict(name);
         if(out == null) return;
         out.setCount(i);
         GameRegistry.addSmelting(new ItemStack(chunk, 1), out, 1.0f);
+    }
+
+    @Override
+    public void addRecipes() {
+        registerSmelting();
+        registerForgeHammer();
+    }
+
+    @Override
+    public List<Object> fixExtras(List<Object> extras) {
+        return null;
     }
 }

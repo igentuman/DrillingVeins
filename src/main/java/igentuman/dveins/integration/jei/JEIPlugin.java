@@ -1,9 +1,8 @@
 package igentuman.dveins.integration.jei;
 
 import igentuman.dveins.RegistryHandler;
-import igentuman.dveins.common.recipe.ForgeHammerRecipe;
-import igentuman.dveins.common.recipe.RecipeHandler;
-import igentuman.dveins.util.ItemHelper;
+import igentuman.dveins.recipe.ForgeHammerRecipe;
+import igentuman.dveins.recipe.RecipeHandler;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;

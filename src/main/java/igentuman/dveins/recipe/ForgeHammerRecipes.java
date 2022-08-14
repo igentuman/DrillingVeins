@@ -3,8 +3,6 @@ package igentuman.dveins.recipe;
 import java.util.ArrayList;
 import java.util.List;
 
-import static igentuman.dveins.util.OreDictHelper.*;
-
 public class ForgeHammerRecipes extends BasicRecipeHandler {
 	
 	public ForgeHammerRecipes() {
@@ -13,19 +11,22 @@ public class ForgeHammerRecipes extends BasicRecipeHandler {
 	
 	@Override
 	public void addRecipes() {
-		addHammerRecipe("ingotCopper", 2, "plateCopper", 1);
+		addHammerRecipe("ingotCopper", 1, "plateCopper", 1);
 		addHammerRecipe("ingotIron", 1, "plateIron", 1);
 		addHammerRecipe("ingotGold", 1, "plateGold", 1);
 		addHammerRecipe("ingotLead", 1, "plateLead", 1);
 		addHammerRecipe("ingotTin", 1, "plateTin", 1);
+
+		addHammerRecipe("chunkIron", 2, "dustIron", 1);
+		addHammerRecipe("chunkGold", 2, "dustGold", 1);
+		addHammerRecipe("chunkCopper", 2, "dustCopper", 1);
+		addHammerRecipe("chunkTin", 2, "dustTin", 1);
+		addHammerRecipe("chunkLead", 2, "dustLead", 1);
 	}
 
 	public void addHammerRecipe(String in1, int inSize1, String out, int outSize) {
 		addRecipe(oreStack(in1,  inSize1), oreStack(out, outSize));
 	}
-
-
-
 
 	@Override
 	public List<Object> fixExtras(List<Object> extras) {

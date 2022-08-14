@@ -49,6 +49,7 @@ public class DVeins
         MinecraftForge.EVENT_BUS.register(new RegistryHandler());
         MinecraftForge.EVENT_BUS.register(this);
         ModPacketHandler.registerMessages(MODID);
+        DVeinsOreDictionary.register();
         GameRegistry.registerWorldGenerator(new OreGen(), 0);
         MinecraftForge.EVENT_BUS.register(new DveinsRecipes());
     }
@@ -57,7 +58,6 @@ public class DVeins
     public void init(FMLInitializationEvent event)  {
         logger.info("Starting Initialization.");
         proxy.init(event);
-        DVeinsOreDictionary.register();
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiProxy());
     }

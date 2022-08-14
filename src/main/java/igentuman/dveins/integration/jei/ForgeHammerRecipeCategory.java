@@ -1,7 +1,7 @@
 package igentuman.dveins.integration.jei;
 
 import com.google.common.collect.ImmutableList;
-import igentuman.dveins.recipe.ForgeHammerRecipe;
+import igentuman.dveins.recipe.BasicRecipe;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -98,19 +98,19 @@ public class ForgeHammerRecipeCategory implements IRecipeCategory<ForgeHammerRec
         private final List<List<ItemStack>> input;
         private final List<List<ItemStack>> output;
 
-        public Wrapper(ForgeHammerRecipe recipe)
+        public Wrapper(BasicRecipe recipe)
         {
             ImmutableList.Builder<List<ItemStack>> builder = ImmutableList.builder();
 
             // Add the ingredient
-            builder.add(recipe.getInput().getStacks());
+            builder.add(recipe.getItemIngredients().get(0).getInputStackList());
 
             // Set the input
             this.input = builder.build();
 
             // Reset builder and add output
             builder = ImmutableList.builder();
-            builder.add(ImmutableList.of(recipe.getOutput()));
+            builder.add(ImmutableList.of(recipe.getItemProducts().get(0).getStack()));
 
             // Set the output
             output = builder.build();

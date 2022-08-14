@@ -23,7 +23,7 @@ import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABI
 
 public class ContainerForgehammer extends Container implements PacketUpdateItemStack.IUpdateNonSlotItemStack {
     private final TileForgeHammer forgehammer;
-    public static final int FORGEHAMMER_SIZE = 9;
+    public static final int FORGEHAMMER_SIZE = 1;
 
     public int progress;
     public int requiredProgress;
@@ -34,10 +34,13 @@ public class ContainerForgehammer extends Container implements PacketUpdateItemS
 
     public ContainerForgehammer(IInventory playerInventory, TileForgeHammer forgehammer) {
         this.forgehammer = forgehammer;
-        this.result = forgehammer.getResult();
-
         addMachineSlots();
         addPlayerSlots(playerInventory);
+    }
+
+    public ItemStack getResult()
+    {
+        return forgehammer.getResult();
     }
 
     @Override
@@ -59,7 +62,7 @@ public class ContainerForgehammer extends Container implements PacketUpdateItemS
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        boolean stackChanged = !ItemStack.areItemStackTagsEqual(this.result, this.forgehammer.getResult());
+        boolean stackChanged = !ItemStack.areItemStackTagsEqual(this.getResult(), this.forgehammer.getResult());
 
         for (IContainerListener listener : listeners) {
             if (stackChanged) {
@@ -73,7 +76,6 @@ public class ContainerForgehammer extends Container implements PacketUpdateItemS
         }
 
         this.progress = forgehammer.getAdjustedEnergy();
-        this.result = forgehammer.getResult();
     }
 
 

@@ -33,7 +33,8 @@ public abstract class BasicRecipeHandler extends AbstractRecipeHandler<BasicReci
 	protected final String name;
 	protected final int itemInputSize, fluidInputSize, itemOutputSize, fluidOutputSize;
 	protected final boolean isShapeless;
-	
+	public List<List<String>> validFluids = null;
+
 	public BasicRecipeHandler(@Nonnull String name, int itemInputSize, int fluidInputSize, int itemOutputSize, int fluidOutputSize) {
 		this(name, itemInputSize, fluidInputSize, itemOutputSize, fluidOutputSize, true);
 	}

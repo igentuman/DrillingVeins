@@ -1,10 +1,11 @@
 package igentuman.dveins;
 
 import igentuman.dveins.command.CommandHandler;
-import igentuman.dveins.recipe.RecipeHandler;
+import igentuman.dveins.recipe.DveinsRecipes;
 import igentuman.dveins.network.GuiProxy;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.ore.OreGen;
+import igentuman.dveins.util.OreDictHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -48,6 +50,7 @@ public class DVeins
         MinecraftForge.EVENT_BUS.register(this);
         ModPacketHandler.registerMessages(MODID);
         GameRegistry.registerWorldGenerator(new OreGen(), 0);
+        MinecraftForge.EVENT_BUS.register(new DveinsRecipes());
     }
 
     @EventHandler
@@ -57,7 +60,6 @@ public class DVeins
         DVeinsOreDictionary.register();
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiProxy());
-        RecipeHandler.register();
     }
 
     @SubscribeEvent
@@ -72,4 +74,9 @@ public class DVeins
         CommandHandler.registerCommands(serverStartEvent);
     }
 
+    @EventHandler
+    public void onIdMapping(FMLModIdMappingEvent idMappingEvent) {
+        OreDictHelper.refreshOreDictCache();
+        DveinsRecipes.refreshRecipeCaches();
+    }
 }

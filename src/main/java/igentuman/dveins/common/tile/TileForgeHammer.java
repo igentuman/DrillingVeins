@@ -5,17 +5,25 @@ import igentuman.dveins.RegistryHandler;
 import igentuman.dveins.common.block.BlockForgeHammer;
 import igentuman.dveins.common.capability.InputMechCapability;
 import igentuman.dveins.common.inventory.ExistingOnlyItemHandlerWrapper;
-import igentuman.dveins.common.inventory.InventoryCraftingWrapper;
+import igentuman.dveins.common.inventory.InventoryWrapper;
 import igentuman.dveins.common.inventory.QueueItemHandler;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
+import igentuman.dveins.recipe.BasicRecipe;
+import igentuman.dveins.recipe.BasicRecipeHandler;
+import igentuman.dveins.recipe.DveinsRecipes;
+import igentuman.dveins.recipe.RecipeInfo;
+import igentuman.dveins.util.FluidRegHelper;
+import igentuman.dveins.util.Tank;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
@@ -25,12 +33,18 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 public class TileForgeHammer extends TileEntity implements ITickable {
-    public InventoryCraftingWrapper inventory;
+    public InventoryWrapper inventory;
     public InputMechCapability mechCapability;
+    protected final BasicRecipeHandler recipeHandler = DveinsRecipes.forgeHammerRecipes;
+    protected RecipeInfo<BasicRecipe> recipeInfo = null;
     ItemStack result;
     public int kineticEnergy;
     public int requiredEnergy;
@@ -50,6 +64,22 @@ public class TileForgeHammer extends TileEntity implements ITickable {
         requiredEnergy = 0;
         outputCooldown = 0;
         outputQueue = new QueueItemHandler();
+    }
+
+
+    public List<Tank> getFluidInputs() {
+        return new ArrayList<Tank>();
+    }
+
+    public List<ItemStack> getItemInputs() {
+        return Arrays.asList(inventory.getStackInSlot(0));
+    }
+
+    public void refreshRecipe() {
+        recipeInfo = recipeHandler.getRecipeInfoFromInputs(getItemInputs(), getFluidInputs());
+        if(recipeInfo != null) {
+            result = recipeInfo.getRecipe().getItemProducts().get(0).getStack();
+        }
     }
 
     @Override
@@ -125,6 +155,7 @@ public class TileForgeHammer extends TileEntity implements ITickable {
 
     @Override
     public void update() {
+        refreshRecipe();
         if(outputCooldown > 0 && !world.isRemote) {
             outputCooldown--;
         }
@@ -144,7 +175,7 @@ public class TileForgeHammer extends TileEntity implements ITickable {
             }
 
             if(kineticEnergy >= requiredEnergy) {
-                process();
+                processRecipe();
             }
 
         } else {
@@ -154,7 +185,7 @@ public class TileForgeHammer extends TileEntity implements ITickable {
     }
 
     public boolean canEnergy() {
-        ItemStack stack = inventory.getCraftingGrid().getStackInSlot(0);
+        ItemStack stack = inventory.getStackInSlot(0);
         return !stack.isEmpty();
     }
 
@@ -164,16 +195,13 @@ public class TileForgeHammer extends TileEntity implements ITickable {
                 bs.getValue(BlockForgeHammer.FACING) : EnumFacing.DOWN;
     }
     
-    public void process() {
-
-        if(inventory.getCraftingGrid().getStackInSlot(0) == null) return;
-        ItemStack output = inventory.getCraftingGrid().getStackInSlot(0);
-        if(output == null || output.equals(ItemStack.EMPTY)) return;
+    public void processRecipe() {
+        if(recipeInfo == null) return;
         if( !world.isRemote) {
-            outputQueue.push(output);
-            inventory.extractItem(0, 1, false);
+            outputQueue.push(recipeInfo.getRecipe().getItemProducts().get(0).getStack());
+            inventory.extractItem(0, recipeInfo.getRecipe().getItemIngredients().get(0).getStack().getCount(), false);
         }
-        if(kineticEnergy >= requiredEnergy && kineticEnergy > 0) {
+        if(world.isRemote && kineticEnergy >= requiredEnergy && kineticEnergy > 0) {
             playForgeSound();
         }
         kineticEnergy = 0;
@@ -239,14 +267,20 @@ public class TileForgeHammer extends TileEntity implements ITickable {
         world.spawnEntity(entity);
     }
 
-    private class MechanicalForgeHammerItemCapabillity extends InventoryCraftingWrapper {
+    private class MechanicalForgeHammerItemCapabillity extends InventoryWrapper {
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
+            refreshRecipe();
 
             if(world == null || world.isRemote) return;
+            ItemStack newResult;
+            if(recipeInfo == null) {
+                newResult = ItemStack.EMPTY;
+            } else {
+                newResult = recipeInfo.getRecipe().getItemProducts().get(0).getStack();
+            }
 
-            ItemStack newResult = inventory.getCraftingGrid().getStackInSlot(0);
             int newRequiredEnergy = getEnergyRequired();
 
             if(!ItemStack.areItemStackTagsEqual(newResult, getResult())

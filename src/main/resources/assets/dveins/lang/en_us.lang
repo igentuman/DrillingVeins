@@ -26,3 +26,6 @@ description.emerald_drill_head=Mine with fortune level: %s
 description.drill_base=Place drill head at the bottom. \nConnect kinetic energy source on top
 description.electric_motor=Provides kinetic energy at the bottom. \nRequires %sRF per tick
 container.electric_motor.energy=Energy: %s RF
+container.forge_hammer=Forge Hammer
+tile.forge_hammer.name=Forge Hammer
+dveins.jei.category.forgehammer=Forge Hammer

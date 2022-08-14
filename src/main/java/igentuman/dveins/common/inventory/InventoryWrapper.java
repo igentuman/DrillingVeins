@@ -2,6 +2,7 @@ package igentuman.dveins.common.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,27 +15,22 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class InventoryCraftingWrapper implements IItemHandler, IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
-    private final InventoryCrafting inventoryCrafting;
+public class InventoryWrapper implements IItemHandler, IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
+    private final InventoryBasic inventory;
 
-    public InventoryCraftingWrapper() {
-        this.inventoryCrafting = new InventoryCrafting(new Container() {
-            @Override
-            public boolean canInteractWith(EntityPlayer playerIn) {
-                return false;
-            }
-        }, 1, 1);
+    public InventoryWrapper() {
+        this.inventory = new InventoryBasic("fh", false,1);
     }
 
     @Override
     public int getSlots() {
-        return inventoryCrafting.getSizeInventory();
+        return inventory.getSizeInventory();
     }
 
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return inventoryCrafting.getStackInSlot(slot);
+        return inventory.getStackInSlot(slot);
     }
 
     @Nonnull
@@ -91,10 +87,10 @@ public class InventoryCraftingWrapper implements IItemHandler, IItemHandlerModif
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (simulate) {
-            ItemStack stack = inventoryCrafting.getStackInSlot(slot);
+            ItemStack stack = inventory.getStackInSlot(slot);
             return ItemHandlerHelper.copyStackWithSize(stack, Math.min(stack.getCount(), amount));
         }
-        return inventoryCrafting.decrStackSize(slot, amount);
+        return inventory.decrStackSize(slot, amount);
     }
 
     @Override
@@ -108,7 +104,7 @@ public class InventoryCraftingWrapper implements IItemHandler, IItemHandlerModif
 
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        inventoryCrafting.setInventorySlotContents(slot, stack);
+        inventory.setInventorySlotContents(slot, stack);
         onContentsChanged(slot);
         onSlotItemChanged(slot);
     }
@@ -131,7 +127,7 @@ public class InventoryCraftingWrapper implements IItemHandler, IItemHandlerModif
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        inventoryCrafting.clear();
+        inventory.clear();
         NBTTagList tagList = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.tagCount(); i++) {
             NBTTagCompound itemTags = tagList.getCompoundTagAt(i);
@@ -146,7 +142,4 @@ public class InventoryCraftingWrapper implements IItemHandler, IItemHandlerModif
 
     protected void onLoad() { }
 
-    public InventoryCrafting getCraftingGrid() {
-        return inventoryCrafting;
-    }
 }

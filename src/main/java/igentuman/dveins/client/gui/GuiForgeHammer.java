@@ -52,7 +52,7 @@ public class GuiForgeHammer extends GuiContainer {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableRescaleNormal();
 
-        drawItem(container.result, 124, 35);
+        drawItem(container.getResult(), 124, 35);
 
         GlStateManager.popMatrix();
 
@@ -76,9 +76,9 @@ public class GuiForgeHammer extends GuiContainer {
         if(getSlotUnderMouse() != null) {
             super.renderHoveredToolTip(mouseX, mouseY);
         }
-        else if(!container.result.isEmpty()
+        else if(!container.getResult().isEmpty()
                 && isPointInRegion(124, 35, 16, 16, mouseX, mouseY)) {
-            this.renderToolTip(container.result, mouseX, mouseY);
+            this.renderToolTip(container.getResult(), mouseX, mouseY);
         }
     }
 

@@ -1,5 +1,6 @@
 package igentuman.dveins.common.tile;
 
+import betterwithmods.api.tile.IMechanicalPower;
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
 import igentuman.dveins.common.block.BlockForgeHammer;
@@ -14,7 +15,9 @@ import igentuman.dveins.recipe.BasicRecipeHandler;
 import igentuman.dveins.recipe.DveinsRecipes;
 import igentuman.dveins.recipe.RecipeInfo;
 import igentuman.dveins.util.FluidRegHelper;
+import igentuman.dveins.util.ModCheck;
 import igentuman.dveins.util.Tank;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
@@ -22,8 +25,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
@@ -40,9 +46,9 @@ import java.util.List;
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
-public class TileForgeHammer extends TileEntity implements ITickable {
+public class TileForgeHammer extends PowerBackend {
     public InventoryWrapper inventory;
-    public InputMechCapability mechCapability;
+
     protected final BasicRecipeHandler recipeHandler = DveinsRecipes.forgeHammerRecipes;
     protected RecipeInfo<BasicRecipe> recipeInfo = null;
     ItemStack result;
@@ -87,12 +93,27 @@ public class TileForgeHammer extends TileEntity implements ITickable {
         if (capability == ITEM_HANDLER_CAPABILITY) {
             return true;
         }
-
-        if (capability == MECH_CAPABILITY && facing != null && facing.getAxis() == findDirection().rotateY().getAxis()) {
-            return true;
-        }
-
         return super.hasCapability(capability, facing);
+    }
+
+    public EnumFacing.Axis getAllowedAxis()
+    {
+        return findDirection().rotateY().getAxis();
+    }
+
+    public EnumFacing getMechanicalSide()
+    {
+        return findDirection().rotateY();
+    }
+
+    public int getBwmPower()
+    {
+        int pow = 0;
+        if(ModCheck.bwmLoaded()) {
+            pow += betterwithmods.api.BWMAPI.IMPLEMENTATION.getPowerOutput(world, pos.offset(getMechanicalSide(),1), getMechanicalSide()) * 3;
+            pow += betterwithmods.api.BWMAPI.IMPLEMENTATION.getPowerOutput(world, pos.offset(getMechanicalSide().getOpposite(),1), getMechanicalSide()) * 3;
+        }
+        return pow;
     }
 
     @Override
@@ -101,9 +122,6 @@ public class TileForgeHammer extends TileEntity implements ITickable {
             return (T) (facing == null ? inventory : new ExistingOnlyItemHandlerWrapper(inventory));
         }
 
-        if (capability == MECH_CAPABILITY && facing != null && facing.getAxis() == findDirection().rotateY().getAxis()) {
-            return (T) mechCapability;
-        }
         return super.getCapability(capability, facing);
     }
 
@@ -169,7 +187,7 @@ public class TileForgeHammer extends TileEntity implements ITickable {
         }
 
         if(canEnergy()) {
-            kineticEnergy += mechCapability.power;
+            kineticEnergy += getMechanicalInput();
             if( !world.isRemote) {
                 ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
             }
@@ -210,11 +228,8 @@ public class TileForgeHammer extends TileEntity implements ITickable {
     @SideOnly(Side.CLIENT)
     private void playForgeSound()
     {
-        world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvent.REGISTRY.getObject(new ResourceLocation("block.anvil.land")),SoundCategory.BLOCKS,0.2f,1,false);
-    }
-
-    public void setEnergy(int kineticEnergy) {
-        this.kineticEnergy = kineticEnergy;
+        //@TODO implement
+        //world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvent.REGISTRY.getObject(new ResourceLocation("block.anvil.land")),SoundCategory.BLOCKS,0.2f,1,false);
     }
 
     private void outputItemFromQueue() {
@@ -266,6 +281,8 @@ public class TileForgeHammer extends TileEntity implements ITickable {
         entity.motionZ = sz;
         world.spawnEntity(entity);
     }
+
+
 
     private class MechanicalForgeHammerItemCapabillity extends InventoryWrapper {
         @Override

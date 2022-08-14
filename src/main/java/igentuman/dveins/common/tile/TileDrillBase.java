@@ -6,6 +6,7 @@ import igentuman.dveins.RegistryHandler;
 import igentuman.dveins.client.sound.SoundHandler;
 import igentuman.dveins.common.block.*;
 import igentuman.dveins.common.capability.InputMechCapability;
+import igentuman.dveins.common.inventory.ExistingOnlyItemHandlerWrapper;
 import igentuman.dveins.common.inventory.QueueItemHandler;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
@@ -23,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -40,8 +42,7 @@ import static igentuman.dveins.ore.OreGen.veinExtraBlocks;
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
-public class TileDrillBase extends TileEntity implements ITickable {
-    public InputMechCapability mechCapability;
+public class TileDrillBase extends PowerBackend {
     ItemStack result;
     public int kineticEnergy;
     public final int requiredKineticEnergy = ModConfig.drilling.energy_for_one_block;
@@ -115,28 +116,19 @@ public class TileDrillBase extends TileEntity implements ITickable {
         stopSound();
     }
 
+    public EnumFacing.Axis getAllowedAxis()
+    {
+        return EnumFacing.Axis.Y;
+    }
+
+    public EnumFacing getMechanicalSide()
+    {
+        return EnumFacing.UP;
+    }
+
     public int getCurrentY()
     {
         return currentY;
-    }
-
-    @Override
-    public boolean hasCapability(@NotNull Capability<?> capability, @Nullable EnumFacing facing) {
-        if (capability == ITEM_HANDLER_CAPABILITY) {
-            return true;
-        }
-        if (capability == MECH_CAPABILITY && facing != null && facing == EnumFacing.UP) {
-            return true;
-        }
-        return super.hasCapability(capability, facing);
-    }
-
-    @Override
-    public <T> T getCapability(@NotNull Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == MECH_CAPABILITY && facing != null && facing == EnumFacing.UP) {
-            return (T) mechCapability;
-        }
-        return super.getCapability(capability, facing);
     }
 
     public int collectedRotation = 0;
@@ -230,14 +222,15 @@ public class TileDrillBase extends TileEntity implements ITickable {
             return;
         }
         if(!world.isRemote) {
+            double power = getMechanicalInput();
             activeFlag = false;
             if (chunkHasVein() && hasDrillHead()) {
-                if (mechCapability.power > 0) {
-                    rotateDrillHead((int) mechCapability.power);
+                if (power > 0) {
+                    rotateDrillHead((int) power);
                     activeFlag = true;
                     wasWorking = true;
                 }
-                kineticEnergy += mechCapability.power * getDrillHeadMultiplier();
+                kineticEnergy += power * getDrillHeadMultiplier();
                 if (!world.isRemote) {
                     ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
                 }

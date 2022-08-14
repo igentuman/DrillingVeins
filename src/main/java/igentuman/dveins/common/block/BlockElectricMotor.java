@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockElectricMotor extends BlockHorizontal {
+public class BlockElectricMotor extends MechanicalBlock {
 
     public BlockElectricMotor() {
         super(Material.IRON);
@@ -36,27 +36,6 @@ public class BlockElectricMotor extends BlockHorizontal {
         this.setTranslationKey("electric_motor");
         this.setRegistryName(DVeins.MODID, "electric_motor");
         this.setCreativeTab(CreativeTabs.DECORATIONS);
-    }
-
-    @NotNull
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getHorizontalIndex();
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
-    }
-
-    @NotNull
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing face, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer){
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
     public boolean isOpaqueCube(IBlockState state)

@@ -35,7 +35,7 @@ public class DVeins
     public static final String NAME = "Drilling Veins";
     public static final String VERSION = "1.0.0";
 
-    @Mod.Instance("dveins")
+    @Mod.Instance(MODID)
     public static DVeins instance;
         
     @SidedProxy(serverSide="igentuman.dveins.common.CommonProxy", clientSide="igentuman.dveins.client.ClientProxy")
@@ -49,7 +49,7 @@ public class DVeins
         MinecraftForge.EVENT_BUS.register(new RegistryHandler());
         MinecraftForge.EVENT_BUS.register(this);
         ModPacketHandler.registerMessages(MODID);
-        DVeinsOreDictionary.register();
+        DVeinsOreDictionary.registerChunks();
         GameRegistry.registerWorldGenerator(new OreGen(), 0);
         MinecraftForge.EVENT_BUS.register(new DveinsRecipes());
     }
@@ -60,6 +60,7 @@ public class DVeins
         proxy.init(event);
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiProxy());
+        DVeinsOreDictionary.registerOres();
     }
 
     @SubscribeEvent

@@ -5,6 +5,7 @@ import igentuman.dveins.ModConfig;
 import igentuman.dveins.client.sound.SoundHandler;
 import igentuman.dveins.network.ModPacketHandler;
 import igentuman.dveins.network.TileProcessUpdatePacket;
+import igentuman.dveins.util.ModCheck;
 import mysticalmechanics.api.DefaultMechCapability;
 import mysticalmechanics.api.IMechCapability;
 import mysticalmechanics.api.MysticalMechanicsAPI;
@@ -13,7 +14,6 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -27,12 +27,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.EnumMap;
 
 import static igentuman.dveins.ModConfig.electricMotor;
-import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
-public class TileElectricMotor extends TileEntity implements ITickable, IEnergyStorage {
+public class TileElectricMotor extends PowerBackend implements IEnergyStorage {
 
     private final EnergyStorage storage;
 
@@ -48,7 +46,7 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
     private boolean activeFlag = false;
     private boolean wasWorking = false;
     private OutputMechCapability mechCapability;
-
+    int bwmPower = 0;
     private SoundEvent soundEvent;
     private int playSoundCooldown = 0;
     private long lastActive = -1;
@@ -65,6 +63,16 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
         this.mechCapability = new OutputMechCapability();
         soundEvent = new SoundEvent(new ResourceLocation(DVeins.MODID, "active_motor"));
 
+    }
+
+    public EnumFacing.Axis getAllowedAxis()
+    {
+        return EnumFacing.Axis.Y;
+    }
+
+    public EnumFacing getMechanicalSide()
+    {
+        return EnumFacing.DOWN;
     }
 
 
@@ -113,38 +121,36 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
     }
 
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing side) {
-        if (capability == MECH_CAPABILITY && side != null && side == EnumFacing.DOWN) {
+
+        if(capability == CapabilityEnergy.ENERGY && side != null && side != getMechanicalSide().getOpposite()) {
             return true;
         }
-        return capability == CapabilityEnergy.ENERGY && side != null && side != EnumFacing.DOWN;
+        return super.hasCapability(capability, side);
     }
 
     boolean hasEnergySideCapability(@Nullable EnumFacing side) {
-        return side != EnumFacing.DOWN;
+        return side != getMechanicalSide().getOpposite();
     }
 
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing side) {
-        if (capability == MECH_CAPABILITY && side != null && side == EnumFacing.DOWN) {
-            return (T) mechCapability;
-        }
         if (capability == CapabilityEnergy.ENERGY) {
             return this.hasEnergySideCapability(side) ? CapabilityEnergy.ENERGY.cast(storage) : null;
-        }  else {
-            return super.getCapability(capability, side);
         }
+        return super.getCapability(capability, side);
     }
 
     public void setEnergyStored(int amount)
     {
         storage.extractEnergy(getEnergyStored(), false);
         storage.receiveEnergy(amount, false);
-        if(amount == 0) {
+        if(amount < electricMotor.kinetic_energy_per_tick) {
             activeFlag = false;
         }
     }
 
     @Override
     public void update() {
+        bwmPower = 0;
         if(world.isRemote) {
             updateSound();
             return;
@@ -174,6 +180,7 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
         wasWorking = activeFlag;
         if( !world.isRemote) {
             mechCapability.setPower(electricMotor.kinetic_energy_per_tick, (EnumFacing)null);
+            bwmPower = (int) (electricMotor.kinetic_energy_per_tick/ModConfig.betterWithMods.energy_conversion_ratio);
             setEnergyStored(getEnergyStored() - electricMotor.rf_per_tick);
             updateOutput();
             ModPacketHandler.instance.sendToAll(this.getTileUpdatePacket());
@@ -258,14 +265,23 @@ public class TileElectricMotor extends TileEntity implements ITickable, IEnergyS
         mechCapability.deserializeNBT(compound.getCompoundTag("mech"));
     }
 
+
+
+    public int getMechanicalOutput(EnumFacing facing) {
+        return bwmPower;
+    }
+
     public void updateOutput() {
         TileEntity te = world.getTileEntity(getPos().down());
-        if (te != null && te.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, EnumFacing.UP)) {
-            IMechCapability mech = (IMechCapability)te.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, EnumFacing.UP);
-            if (mech.isInput(EnumFacing.UP)) {
-                mech.setPower(this.mechCapability.getPower((EnumFacing)null), EnumFacing.UP);
+        if(ModCheck.mysticalmechanicsLoaded()) {
+            if (te != null && te.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, EnumFacing.UP)) {
+                IMechCapability mech = (IMechCapability) te.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, EnumFacing.UP);
+                if (mech.isInput(EnumFacing.UP)) {
+                    mech.setPower(this.mechCapability.getPower((EnumFacing) null), EnumFacing.UP);
+                }
             }
         }
+
     }
 
     class OutputMechCapability extends DefaultMechCapability  implements INBTSerializable<NBTTagCompound> {

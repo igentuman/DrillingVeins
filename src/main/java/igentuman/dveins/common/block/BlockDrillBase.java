@@ -2,19 +2,13 @@
 package igentuman.dveins.common.block;
 
 import igentuman.dveins.DVeins;
-import igentuman.dveins.ModConfig;
 import igentuman.dveins.common.tile.TileDrillBase;
-import igentuman.dveins.common.tile.TileElectricMotor;
-import mysticalmechanics.tileentity.TileEntityAxle;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -27,17 +21,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
 import java.util.List;
 
-import static net.minecraft.inventory.InventoryHelper.spawnItemStack;
-import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
-
-public class BlockDrillBase extends BlockHorizontal {
+public class BlockDrillBase extends MechanicalBlock {
 
     public BlockDrillBase() {
         super(Material.IRON);
@@ -48,26 +38,6 @@ public class BlockDrillBase extends BlockHorizontal {
         this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    @NotNull
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getHorizontalIndex();
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
-    }
-
-    @NotNull
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing face, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer){
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
-    }
 
     @Override
     public boolean isFullCube(IBlockState state) {
@@ -113,6 +83,7 @@ public class BlockDrillBase extends BlockHorizontal {
 
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
         TileDrillBase tile = (TileDrillBase)world.getTileEntity(pos);
+        tile.neighborChanged(fromPos);
         tile.neighborChanged(fromPos);
     }
 

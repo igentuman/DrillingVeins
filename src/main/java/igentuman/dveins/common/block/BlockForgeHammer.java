@@ -2,12 +2,9 @@ package igentuman.dveins.common.block;
 
 import igentuman.dveins.DVeins;
 import igentuman.dveins.common.tile.TileForgeHammer;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -23,7 +20,7 @@ import javax.annotation.Nullable;
 import static net.minecraft.inventory.InventoryHelper.spawnItemStack;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
-public class BlockForgeHammer extends BlockHorizontal {
+public class BlockForgeHammer extends MechanicalBlock {
 
     public BlockForgeHammer() {
         super(Material.IRON);
@@ -32,27 +29,6 @@ public class BlockForgeHammer extends BlockHorizontal {
         this.setTranslationKey("forge_hammer");
         this.setRegistryName(DVeins.MODID, "forge_hammer");
         this.setCreativeTab(CreativeTabs.DECORATIONS);
-    }
-
-    @NotNull
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getHorizontalIndex();
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
-    }
-
-    @NotNull
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing face, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer){
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
     @Override

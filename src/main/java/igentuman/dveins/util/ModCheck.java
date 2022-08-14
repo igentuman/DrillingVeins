@@ -12,6 +12,7 @@ public class ModCheck {
 	private static boolean craftTweakerLoaded = false;
 	private static boolean contentTweakerLoaded = false;
 	private static boolean mantleLoaded = false;
+	private static boolean bwmLoaded = false;
 	private static boolean tinkersLoaded = false;
 	private static boolean constructsArmoryLoaded = false;
 	private static boolean gregtechLoaded = false;
@@ -27,7 +28,8 @@ public class ModCheck {
 	private static boolean cubicChunksLoaded = false;
 	private static boolean hwylaLoaded = false;
 	private static boolean patchouliLoaded = false;
-	
+	private static boolean mysticalmechanicsLoaded = false;
+
 	public static void init() {
 		if (initialized) {
 			return;
@@ -36,6 +38,7 @@ public class ModCheck {
 		cofhCoreLoaded = Loader.isModLoaded("cofhcore");
 		ic2Loaded = Loader.isModLoaded("ic2");
 		mekanismLoaded = Loader.isModLoaded("mekanism");
+		bwmLoaded = Loader.isModLoaded("betterwithmods");
 		craftTweakerLoaded = Loader.isModLoaded("crafttweaker");
 		contentTweakerLoaded = craftTweakerLoaded && Loader.isModLoaded("contenttweaker");
 		mantleLoaded = Loader.isModLoaded("mantle");
@@ -54,7 +57,8 @@ public class ModCheck {
 		cubicChunksLoaded = Loader.isModLoaded("cubicchunks");
 		hwylaLoaded = Loader.isModLoaded("waila");
 		patchouliLoaded = Loader.isModLoaded("patchouli");
-		
+		mysticalmechanicsLoaded = Loader.isModLoaded("mysticalmechanics");
+
 		initialized = true;
 	}
 	
@@ -140,5 +144,19 @@ public class ModCheck {
 	
 	public static boolean patchouliLoaded() {
 		return patchouliLoaded;
+	}
+
+	public static boolean bwmLoaded() {
+		if(!bwmLoaded) {
+			bwmLoaded = Loader.isModLoaded("betterwithmods");
+		}
+		return bwmLoaded;
+	}
+
+	public static boolean mysticalmechanicsLoaded() {
+		if(!mysticalmechanicsLoaded) {
+			mysticalmechanicsLoaded = Loader.isModLoaded("mysticalmechanics");
+		}
+		return mysticalmechanicsLoaded;
 	}
 }

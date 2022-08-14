@@ -9,6 +9,7 @@ public class ModConfig {
     public static ElectricMotor electricMotor = new ElectricMotor();
     public static ForgeHammer forgeHammer = new ForgeHammer();
     public static Customizations customizations = new Customizations();
+    public static BetterWithMods betterWithMods = new BetterWithMods();
 
     public static class OreGeneration {
 
@@ -92,11 +93,11 @@ public class ModConfig {
         @Config.Comment({
                 "Speed multiplier to harvest block with diamond head"
         })
-        public double diamond_drill_head_multiplier = 1.5D;
+        public double diamond_drill_head_multiplier = 2.0;
 
         @Config.Name("ores_whitelist")
         @Config.Comment({
-                "List of ores allowed to harvest"
+                "List of ores allowed to harvest (not yet implemented)"
         })
 
         public String[] ores_whitelist = new String[]{
@@ -138,7 +139,7 @@ public class ModConfig {
 
         @Config.Name("ore_dict_mod_priority")
         @Config.Comment({
-                "Prioritise machines output for specific mod items"
+                "Prioritise machines output for specific mod items (not yet implemented)"
         })
         public String[] ore_dict_mod_priority = new String[]{
                     "dveins",
@@ -148,4 +149,12 @@ public class ModConfig {
         };;
     }
 
+    public static class BetterWithMods {
+
+        @Config.Name("energy_conversion_ratio")
+        @Config.Comment({
+                "Used to multiply or divide energy values to convert from/to BWM energy"
+        })
+        public double energy_conversion_ratio  = 20.0;
+    }
 }

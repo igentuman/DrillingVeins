@@ -30,6 +30,8 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 
 import static igentuman.dveins.ModConfig.electricMotor;
+import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
+
 public class TileElectricMotor extends PowerBackend implements IEnergyStorage {
 
     private final EnergyStorage storage;
@@ -122,8 +124,12 @@ public class TileElectricMotor extends PowerBackend implements IEnergyStorage {
 
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing side) {
 
-        if(capability == CapabilityEnergy.ENERGY && side != null && side != getMechanicalSide().getOpposite()) {
+        if(capability == CapabilityEnergy.ENERGY && side != null && side != getMechanicalSide()) {
             return true;
+        }
+
+        if (capability == MECH_CAPABILITY) {
+            return false;
         }
         return super.hasCapability(capability, side);
     }
@@ -273,11 +279,13 @@ public class TileElectricMotor extends PowerBackend implements IEnergyStorage {
 
     public void updateOutput() {
         TileEntity te = world.getTileEntity(getPos().down());
-        if(ModCheck.mysticalmechanicsLoaded()) {
+    if(ModCheck.mysticalmechanicsLoaded()) {
             if (te != null && te.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, EnumFacing.UP)) {
                 IMechCapability mech = (IMechCapability) te.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, EnumFacing.UP);
                 if (mech.isInput(EnumFacing.UP)) {
-                    mech.setPower(this.mechCapability.getPower((EnumFacing) null), EnumFacing.UP);
+                    try {
+                        mech.setPower(this.mechCapability.getPower((EnumFacing) null), EnumFacing.UP);
+                    } catch (NullPointerException ignore) {}
                 }
             }
         }

@@ -6,6 +6,7 @@
   "version": "${version}",
   "mcversion": "${mcversion}",
   "authorList": ["igentuman"],
-  "logoFile": "assets/dveins/textures/blocks/dveins.png"
+  "logoFile": "assets/dveins/logo.png",
+  "url": "https://www.curseforge.com/minecraft/mc-mods/drilling-veins"
 }
 ]

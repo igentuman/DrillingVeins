@@ -2,8 +2,6 @@ package igentuman.dveins.common.tile;
 
 import betterwithmods.api.tile.IMechanicalPower;
 import igentuman.dveins.ModConfig;
-import igentuman.dveins.RegistryHandler;
-import igentuman.dveins.common.block.BlockForgeHammer;
 import igentuman.dveins.common.block.MechanicalBlock;
 import igentuman.dveins.common.capability.InputMechCapability;
 import igentuman.dveins.util.ModCheck;
@@ -21,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
-import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 @Optional.Interface(iface = "betterwithmods.api.tile.IMechanicalPower", modid = "betterwithmods")
 public class PowerBackend extends TileEntity implements ITickable, IMechanicalPower {

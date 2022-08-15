@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "BCB",
+    "IDI"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:dropper"
+    },
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "gearIron"
+    },
+    "C": {
+        "item": "minecraft:diamond_pickaxe"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
+    }
+  },
+  "result": {
+    "item": "dveins:forge_hammer"
+  }
+}

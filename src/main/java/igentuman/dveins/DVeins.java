@@ -49,9 +49,8 @@ public class DVeins
         MinecraftForge.EVENT_BUS.register(new RegistryHandler());
         MinecraftForge.EVENT_BUS.register(this);
         ModPacketHandler.registerMessages(MODID);
-
-        GameRegistry.registerWorldGenerator(new OreGen(), 0);
         MinecraftForge.EVENT_BUS.register(new DveinsRecipes());
+        GameRegistry.registerWorldGenerator(new OreGen(), 0);
     }
 
     @EventHandler
@@ -62,6 +61,8 @@ public class DVeins
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiProxy());
         DVeinsOreDictionary.registerChunks();
         DVeinsOreDictionary.registerOres();
+
+
     }
 
     @SubscribeEvent

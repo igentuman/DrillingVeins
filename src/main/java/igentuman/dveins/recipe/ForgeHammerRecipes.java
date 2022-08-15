@@ -1,5 +1,9 @@
 package igentuman.dveins.recipe;
 
+import igentuman.dveins.util.ItemHelper;
+import igentuman.dveins.util.RegistryHelper;
+import igentuman.dveins.util.StackHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +21,11 @@ public class ForgeHammerRecipes extends BasicRecipeHandler {
 		addHammerRecipe("ingotLead", 1, "plateLead", 1);
 		addHammerRecipe("ingotTin", 1, "plateTin", 1);
 
-		addHammerRecipe("chunkIron", 2, "dustIron", 1);
-		addHammerRecipe("chunkGold", 2, "dustGold", 1);
-		addHammerRecipe("chunkCopper", 2, "dustCopper", 1);
-		addHammerRecipe("chunkTin", 2, "dustTin", 1);
-		addHammerRecipe("chunkLead", 2, "dustLead", 1);
+		addRecipe(RegistryHelper.itemStackFromRegistry("dveins:iron_chunk", 2), oreStack("dustIron", 1));
+		addRecipe(RegistryHelper.itemStackFromRegistry("dveins:gold_chunk", 2), oreStack("dustGold", 1));
+		addRecipe(RegistryHelper.itemStackFromRegistry("dveins:copper_chunk", 2), oreStack("dustCopper", 1));
+		addRecipe(RegistryHelper.itemStackFromRegistry("dveins:tin_chunk", 2), oreStack("dustTin", 1));
+		addRecipe(RegistryHelper.itemStackFromRegistry("dveins:lead_chunk", 2), oreStack("dustLead", 1));
 	}
 
 	public void addHammerRecipe(String in1, int inSize1, String out, int outSize) {

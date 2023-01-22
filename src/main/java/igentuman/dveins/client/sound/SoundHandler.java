@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static igentuman.dveins.DVeins.MODID;
 
-@Mod.EventBusSubscriber(modid = MODID)
+@Mod.EventBusSubscriber(modid = MODID, value = Side.CLIENT)
 @SideOnly(Side.CLIENT)
 public class SoundHandler {
 

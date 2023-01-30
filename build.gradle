@@ -29,7 +29,7 @@ repositories {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.1"
+version = "1.0.2"
 group = "igentuman.dveins"
 archivesBaseName = "DrillingVeins"
 
@@ -73,11 +73,11 @@ dependencies {
     shade "com.github.MJaroslav.Reflectors:library:v4"
     compileOnly "org.jetbrains:annotations:17.0.0"
     deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:${crafttweaker_version}"
+    deobfCompile "curse.maven:immersive-engineering-231951:2974106"
     deobfCompile "mekanism:Mekanism:${mekanism_version}"
     deobfCompile "curse.maven:mysticalmechanics-300742:3006392"
     deobfCompile "curse.maven:bwm-suite-246760:3289033"
     deobfCompile "curse.maven:bwm-core-294335:2624990"
-    deobfCompile "curse.maven:immersive-engineering-231951:2974106"
     deobfProvided "mezz.jei:jei_1.12.2:${jei_version}:api"
     implementation "mezz.jei:jei_1.12.2:${jei_version}"
     runtime "mezz.jei:jei_1.12.2:${jei_version}"

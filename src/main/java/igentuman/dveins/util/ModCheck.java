@@ -8,6 +8,7 @@ public class ModCheck {
 	
 	private static boolean cofhCoreLoaded = false;
 	private static boolean ic2Loaded = false;
+	private static boolean ieLoaded = false;
 	private static boolean mekanismLoaded = false;
 	private static boolean craftTweakerLoaded = false;
 	private static boolean contentTweakerLoaded = false;
@@ -53,6 +54,7 @@ public class ModCheck {
 		jeiLoaded = Loader.isModLoaded("jei");
 		projectELoaded = Loader.isModLoaded("projecte");
 		commonCapabilitiesLoaded = Loader.isModLoaded("commoncapabilities");
+		ieLoaded = Loader.isModLoaded("immersiveengineering");
 		gameStagesLoaded = Loader.isModLoaded("gamestages");
 		cubicChunksLoaded = Loader.isModLoaded("cubicchunks");
 		hwylaLoaded = Loader.isModLoaded("waila");
@@ -69,7 +71,10 @@ public class ModCheck {
 	public static boolean ic2Loaded() {
 		return ic2Loaded;
 	}
-	
+	public static boolean ieLoaded() {
+		return ieLoaded;
+	}
+
 	public static boolean mekanismLoaded() {
 		return mekanismLoaded;
 	}

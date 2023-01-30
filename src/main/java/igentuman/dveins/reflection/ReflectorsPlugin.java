@@ -28,6 +28,9 @@ public class ReflectorsPlugin extends Reflectors.FMLLoadingPluginAdapter
         if (transformedName.equals("mysticalmechanics.block.BlockGearbox")) {
             return Reflectors.reflectClass(basicClass, transformedName, BlockGearboxReflector.class.getName());
         }
+        if (transformedName.equals("blusunrize.immersiveengineering.common.blocks.metal.TileEntityExcavator")) {
+            return Reflectors.reflectClass(basicClass, transformedName, IETileExcavatorReflection.class.getName());
+        }
 
         return basicClass;
     }

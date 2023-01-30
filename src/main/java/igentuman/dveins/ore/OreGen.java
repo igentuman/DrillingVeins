@@ -1,8 +1,11 @@
 package igentuman.dveins.ore;
 
+import blusunrize.immersiveengineering.api.tool.ExcavatorHandler;
+import blusunrize.immersiveengineering.common.IESaveData;
 import com.google.common.base.Predicate;
 import igentuman.dveins.ModConfig;
 import igentuman.dveins.RegistryHandler;
+import igentuman.dveins.util.ModCheck;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
@@ -29,7 +32,8 @@ public class OreGen implements IWorldGenerator {
     public static long zSeed = 2212332449L;
     private int chunkID = 0;
     private int blocksCounter = 0;
-    public static int veinExtraBlocks = 4;
+    public static int veinExtraBlocks = ModConfig.oreGeneration.vein_extra_blocks_outside_chunk;
+    public static World world;
 
     private Block[] blocksToReplace = new Block[] {
             Blocks.STONE,
@@ -56,11 +60,38 @@ public class OreGen implements IWorldGenerator {
         return ores[r.nextInt(ores.length)];
     }
 
+    protected static boolean chunkHasDeposit(int chunkX, int chunkZ)
+    {
+        ExcavatorHandler.MineralWorldInfo info = ExcavatorHandler.getMineralWorldInfo(world,
+                chunkX, chunkZ);
+        return info.mineral != null;
+    }
+
+    public static void generateDeposit(int chunkX, int chunkZ)
+    {
+        if(!ModCheck.ieLoaded()) return;
+        ExcavatorHandler.MineralWorldInfo info = ExcavatorHandler.getMineralWorldInfo(world,
+                chunkX, chunkZ);
+        Random rnd = new Random(chunkX+chunkZ);
+        int id = rnd.nextInt(ExcavatorHandler.mineralList.size()-1);
+        ExcavatorHandler.MineralMix mix = (ExcavatorHandler.MineralMix) ExcavatorHandler.mineralList.keySet().toArray()[id];
+        info.mineralOverride = mix;
+        IESaveData.setDirty(world.provider.getDimension());
+    }
+
     public static boolean chunkHasVein(int chunkX, int chunkZ, long worldSeed)
     {
+        if(ModConfig.immersiveEngineering.generate_veins_only_at_ie_deposits_chunks &&
+                ModCheck.ieLoaded()
+        ) {
+            return chunkHasDeposit(chunkX, chunkZ);
+        }
         Random random = new Random(worldSeed + chunkX * xSeed + chunkZ * zSeed);
         if (random.nextInt(chances) == 0)
         {
+            if(ModConfig.immersiveEngineering.generate_ie_deposits_at_vein_chunk) {
+                generateDeposit(chunkX, chunkZ);
+            }
             return true;
         }
         return false;
@@ -93,6 +124,8 @@ public class OreGen implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator,
                          IChunkProvider chunkProvider) {
+        ModCheck.init();
+        OreGen.world = world;
         if(!enableGen) return;
         String dim = String.valueOf(world.provider.getDimension());
         if(!dimensions.contains(dim)) return;

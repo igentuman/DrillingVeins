@@ -10,6 +10,7 @@ public class ModConfig {
     public static ForgeHammer forgeHammer = new ForgeHammer();
     public static Customizations customizations = new Customizations();
     public static BetterWithMods betterWithMods = new BetterWithMods();
+    public static ImmersiveEngineering immersiveEngineering = new ImmersiveEngineering();
 
     public static class OreGeneration {
 
@@ -55,11 +56,18 @@ public class ModConfig {
 
         @Config.Name("ore_chunks_per_block")
         @Config.Comment({
-                "How many pliles should drop from ore block",
+                "How many piles should drop from ore block",
                 "One pile equals one nugget"
         })
 
         public int ore_chunks_per_block = 2;
+
+        @Config.Name("vein_extra_blocks_outside_chunk")
+        @Config.Comment({
+                "How how many blocks from outside chank can be used for vein generation",
+                "Set to 0 in case of world generation lag"
+        })
+        public int vein_extra_blocks_outside_chunk = 4;
     }
 
     public static class Drilling {
@@ -156,5 +164,26 @@ public class ModConfig {
                 "Used to multiply or divide energy values to convert from/to BWM energy"
         })
         public double energy_conversion_ratio  = 20.0;
+    }
+
+    public static class ImmersiveEngineering {
+
+        @Config.Name("generate_ie_deposits_at_vein_chunk")
+        @Config.Comment({
+                "Generation of additional deposits of Immersive Engineering at vien chunk"
+        })
+        public boolean generate_ie_deposits_at_vein_chunk  = false;
+
+        @Config.Name("generate_veins_only_at_ie_deposits_chunks")
+        @Config.Comment({
+                "IMPORTANT! This will disable regular vein generation config. Vein chunks will be only generated at IE deposit chunks"
+        })
+        public boolean generate_veins_only_at_ie_deposits_chunks  = false;
+
+        @Config.Name("allow_ie_excavator_to_dig_veins")
+        @Config.Comment({
+                "Excavators will dig veins after deposit depletion."
+        })
+        public boolean allow_ie_excavator_to_dig_veins  = false;
     }
 }

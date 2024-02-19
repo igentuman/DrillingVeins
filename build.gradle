@@ -29,7 +29,7 @@ repositories {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.3"
+version = "1.0.4"
 group = "igentuman.dveins"
 archivesBaseName = "DrillingVeins"
 
@@ -80,8 +80,9 @@ dependencies {
     deobfCompile "curse.maven:bwm-core-294335:2624990"
     deobfProvided "mezz.jei:jei_1.12.2:${jei_version}:api"
     implementation "mezz.jei:jei_1.12.2:${jei_version}"
+    compileOnly "curse.maven:bwm-suite-246760:3289033"
     runtime "mezz.jei:jei_1.12.2:${jei_version}"
-    runtime "curse.maven:mechanical-crafting-359671:3273914"
+    deobfCompile "curse.maven:mechanical-crafting-359671:3273914"
     //deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
 }
 

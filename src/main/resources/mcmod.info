@@ -2,7 +2,7 @@
 {
   "modid": "dveins",
   "name": "Drilling Veins",
-  "description": "This mod is for accuiring resources.",
+  "description": "This mod is for acquiring resources.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "authorList": ["igentuman"],

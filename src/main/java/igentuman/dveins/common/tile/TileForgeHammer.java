@@ -14,22 +14,15 @@ import igentuman.dveins.recipe.BasicRecipe;
 import igentuman.dveins.recipe.BasicRecipeHandler;
 import igentuman.dveins.recipe.DveinsRecipes;
 import igentuman.dveins.recipe.RecipeInfo;
-import igentuman.dveins.util.FluidRegHelper;
 import igentuman.dveins.util.ModCheck;
 import igentuman.dveins.util.Tank;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
@@ -43,11 +36,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static mysticalmechanics.api.MysticalMechanicsAPI.MECH_CAPABILITY;
 import static net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 
 public class TileForgeHammer extends PowerBackend {
-    public InventoryWrapper inventory;
+    public final InventoryWrapper inventory;
+    protected final ExistingOnlyItemHandlerWrapper invHandler;
 
     protected final BasicRecipeHandler recipeHandler = DveinsRecipes.forgeHammerRecipes;
     protected RecipeInfo<BasicRecipe> recipeInfo = null;
@@ -64,6 +57,7 @@ public class TileForgeHammer extends PowerBackend {
     public TileForgeHammer() {
         super();
         inventory = new MechanicalForgeHammerItemCapabillity();
+        invHandler = new ExistingOnlyItemHandlerWrapper(inventory);
         mechCapability = new InputMechCapability();
         result = ItemStack.EMPTY;
         kineticEnergy = 0;
@@ -115,11 +109,10 @@ public class TileForgeHammer extends PowerBackend {
         }
         return pow;
     }
-
     @Override
     public <T> T getCapability(@NotNull Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == ITEM_HANDLER_CAPABILITY) {
-            return (T) (facing == null ? inventory : new ExistingOnlyItemHandlerWrapper(inventory));
+            return (T) inventory;
         }
 
         return super.getCapability(capability, facing);
@@ -229,7 +222,6 @@ public class TileForgeHammer extends PowerBackend {
     private void playForgeSound()
     {
         //@TODO implement
-        //world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvent.REGISTRY.getObject(new ResourceLocation("block.anvil.land")),SoundCategory.BLOCKS,0.2f,1,false);
     }
 
     private void outputItemFromQueue() {

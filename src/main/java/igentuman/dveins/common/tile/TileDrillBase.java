@@ -113,7 +113,9 @@ public class TileDrillBase extends PowerBackend {
     public void invalidate()
     {
         super.invalidate();
-        stopSound();
+        if(world.isRemote) {
+            stopSound();
+        }
     }
 
     public EnumFacing.Axis getAllowedAxis()

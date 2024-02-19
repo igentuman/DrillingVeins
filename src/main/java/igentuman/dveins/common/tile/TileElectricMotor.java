@@ -115,7 +115,9 @@ public class TileElectricMotor extends PowerBackend implements IEnergyStorage {
     public void invalidate()
     {
         super.invalidate();
-        stopSound();
+        if(world.isRemote) {
+            stopSound();
+        }
     }
 
     public EnergyStorage getEnergyStorage() {
